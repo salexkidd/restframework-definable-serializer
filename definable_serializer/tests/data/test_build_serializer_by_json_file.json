@@ -1,0 +1,12 @@
+{
+    "main": {
+        "name": "TestSerializer",
+        "fields": [
+            {
+                "name": "test_field",
+                "field": "CharField"
+            }
+       ]
+    }
+
+}

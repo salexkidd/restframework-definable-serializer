@@ -1,0 +1,49 @@
+{
+    "main": {
+        "name": "GroupSerializer",
+        "fields": [
+            {
+                "name": "group_name",
+                "field": "CharField",
+                "field_kwargs": {
+                    "label": "Group name",
+                    "required": true,
+                    "help_text": "Please enter group name"
+                }
+            },
+            {
+                "name": "person_list",
+                "field": "PersonSerializer",
+                "field_kwargs": {
+                    "many": true
+                }
+            }
+        ]
+    },
+
+    "depending_serializers": [
+        {
+            "name": "PersonSerializer",
+            "fields": [
+                {
+                    "name": "username_field",
+                    "field": "CharField",
+                    "field_kwargs": {
+                        "label": "Username",
+                        "required": true,
+                        "initial": ""
+                    }
+                },
+                {
+                    "name": "email_field",
+                    "field": "EmailField",
+                    "field_kwargs": {
+                        "label": "Email",
+                        "required": true,
+                        "initial": ""
+                    }
+                }
+            ]
+        }
+    ]
+}

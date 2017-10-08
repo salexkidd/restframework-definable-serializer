@@ -1,0 +1,151 @@
+{
+    "main": {
+        "name": "AllFieldSerializer",
+        "fields": [
+            {
+                "name": "boolean_field",
+                "field": "BooleanField"
+            },
+
+            {
+                "name": "nullboolean_field",
+                "field": "NullBooleanField"
+            },
+
+            {
+                "name": "char_field",
+                "field": "CharField"
+            },
+
+            {
+                "name": "email_field",
+                "field": "EmailField"
+            },
+
+            {
+                "name": "regex_field",
+                "field": "RegexField",
+                "field_args": ["a-zA-Z0-9"]
+            },
+
+            {
+                "name": "slug_field",
+                "field": "SlugField"
+            },
+
+            {
+                "name": "url_field",
+                "field": "URLField"
+            },
+
+            {
+                "name": "uuid_field",
+                "field": "UUIDField"
+            },
+
+            {
+                "name": "filepath_field",
+                "field": "FilePathField",
+                "field_args": "/"
+            },
+
+            {
+                "name": "ipaddress_field",
+                "field": "IPAddressField"
+            },
+
+            {
+                "name": "integer_field",
+                "field": "IntegerField"
+            },
+
+            {
+                "name": "decimal_field",
+                "field": "DecimalField",
+                "field_kwargs": {
+                    "max_digits": 5,
+                    "decimal_places": 2
+                }
+            },
+
+            {
+                "name": "datetime_field",
+                "field": "DateTimeField"
+            },
+
+            {
+                "name": "date_field",
+                "field": "DateField"
+            },
+
+            {
+                "name": "time_field",
+                "field": "TimeField"
+            },
+
+            {
+                "name": "duration_field",
+                "field": "DurationField"
+            },
+
+            {
+                "name": "duration_field",
+                "field": "DurationField"
+            },
+
+            {
+                "name": "choice_field",
+                "field": "ChoiceField",
+                "field_args": [
+                    [
+                        [1, "choice_one"],
+                        [2, "choice_two"],
+                        [3, "choice_three"]
+                    ]
+                ]
+            },
+
+            {
+                "name": "multiple_choice_field",
+                "field": "MultipleChoiceField",
+                "field_args": [
+                    [
+                        [1, "choice_one"],
+                        [2, "choice_two"],
+                        [3, "choice_three"]
+                    ]
+                ]
+            },
+
+            {
+                "name": "file_field",
+                "field": "FileField"
+            },
+
+            {
+                "name": "image_field",
+                "field": "ImageField"
+            },
+
+            {
+                "name": "json_field",
+                "field": "JSONField"
+            },
+
+            {
+                "name": "hidden_field",
+                "field": "HiddenField",
+                "field_kwargs": {
+                    "default": "Hoi!"
+                }
+            },
+
+            {
+                "name": "readonly_field",
+                "field": "ReadOnlyField"
+            }
+
+        ]
+    }
+
+}

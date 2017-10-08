@@ -1,0 +1,30 @@
+<style type="text/css">
+    .CodeMirror {
+        border-top: 1px solid #eee;
+        border-bottom: 1px solid #eee;
+        font-size: 15px;
+        height: 560px;
+        width: 80%;
+    }
+
+    .cm-tab {
+        background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAMCAYAAAAkuj5RAAAAAXNSR0IArs4c6QAAAGFJREFUSMft1LsRQFAQheHPowAKoACx3IgEKtaEHujDjORSgWTH/ZOdnZOcM/sgk/kFFWY0qV8foQwS4MKBCS3qR6ixBJvElOobYAtivseIE120FaowJPN75GMu8j/LfMwNjh4HUpwg4LUAAAAASUVORK5CYII=);
+        background-position: right;
+        background-repeat: no-repeat;
+    }
+</style>
+
+<script type="text/javascript">
+    (function() {
+        var elem = document.getElementById("id_{{ name }}");
+        var option = {{ options|safe }};
+        var tabKeyFunction = function(cm) {
+            var spaces = Array(cm.getOption('indentUnit') + 1).join(' ');
+            cm.replaceSelection(spaces);
+        };
+        option["extraKeys"] = {
+            "Tab": tabKeyFunction
+        }
+        CodeMirror.fromTextArea(elem, option);
+    })();
+</script>
