@@ -47,6 +47,7 @@ class DefinableSerializerMeta(rf_serializers.SerializerMetaclass):
     @classmethod
     def _build_fields(metacls, fields_defn, serializer_classes):
         fields = dict()
+        validate_methods = dict()
 
         for defn in fields_defn:
             field_class_str = defn["field"]
@@ -66,6 +67,7 @@ class DefinableSerializerMeta(rf_serializers.SerializerMetaclass):
 
             field_args = defn.get("field_args" , list())
             field_kwargs = defn.get("field_kwargs", dict())
+            validate_method_str = defn.get("validate_method", None)
 
             try:
                 fields[field_name] = field_class(*field_args, **field_kwargs)
@@ -73,19 +75,42 @@ class DefinableSerializerMeta(rf_serializers.SerializerMetaclass):
             except Exception as e:
                 raise ValidationError({field_name: e})
 
-        return fields
+            if validate_method_str:
+                try:
+                    global_var, local_var = dict(), dict()
+                    exec(validate_method_str, global_var, local_var)
+
+                    if "validate_method" not in local_var:
+                        raise NotImplemented("'validate_method' not found")
+
+                    validate_methods.update({
+                        field_name: local_var["validate_method"]
+                    })
+
+                except Exception as e:
+                    raise ValidationError({
+                        field_name: "Can't parse validate_method: {}".format(e)
+                    })
+
+
+        return fields, validate_methods
 
     @classmethod
     def __prepare__(metacls, name, bases, **kwargs):
         return super().__prepare__(name, bases, **kwargs)
 
     def __new__(metacls, name, bases, namespace, **kwargs):
-        namespace.update(
-            metacls._build_fields(
-                kwargs.pop("fields_defn"),
-                kwargs.pop("serializer_classes")
-            )
+        fields, validate_methods = metacls._build_fields(
+            kwargs.pop("fields_defn"),
+            kwargs.pop("serializer_classes")
         )
+        namespace.update(fields)
+
+        for field_name, validate_method in validate_methods.items():
+            namespace.update({
+                "validate_{}".format(field_name): validate_method
+            })
+
         return super().__new__(metacls, name, bases, namespace, *kwargs)
 
     def __init__(cls, name, bases, namespace, **kwargs):

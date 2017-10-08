@@ -1,0 +1,15 @@
+main:
+  name: TestSerializer
+  fields:
+    - name: test_field_one
+      field: CharField
+      field_kwargs:
+        label: Test Field One
+        required: true
+        help_text: Please enter group name
+      validate_method: |
+        def validate_method(self, value):
+            from rest_framework import serializers
+            if value != "correct_data":
+                raise serializers.ValidationError("Wrong data")
+            return value
