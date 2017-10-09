@@ -10,6 +10,7 @@ import simplejson
 import codecs
 import pprint
 import pydoc
+import types
 import yaml
 
 
@@ -27,6 +28,16 @@ __all__ = (
 
 class DefinableSerializerMeta(rf_serializers.SerializerMetaclass):
     # https://stackoverflow.com/questions/27258557/metaclass-arguments-for-python-3-x
+
+    @classmethod
+    def _parse_validate_method(metacls, method_str):
+        global_var, local_var = dict(), dict()
+        exec(method_str, global_var, local_var)
+        validate_method = local_var["validate_method"]
+        if type(validate_method) is not types.FunctionType:
+            raise ValidationError("Not a function")
+
+        return validate_method
 
     @classmethod
     def _get_field_class(metacls, field_class_str, serializer_classes):
@@ -53,37 +64,32 @@ class DefinableSerializerMeta(rf_serializers.SerializerMetaclass):
             field_class_str = defn["field"]
             field_name = defn["name"]
 
-            field_class = metacls._get_field_class(field_class_str, serializer_classes)
+            field_class = metacls._get_field_class(
+                field_class_str, serializer_classes)
 
             if field_class in NOT_AVAILABLE_FIELDS:
-                raise ValidationError({
-                    field_name: "Sorry, '{}' field not avalable.".format(field_class_str)
-                })
+                e_str = "'{}' field not avalable.".format(field_class_str)
+                raise ValidationError({field_name: e_str})
 
             if not field_class:
-                raise ValidationError({
-                    field_name: "Can't find '{}' field class".format(field_class_str)
-                })
+                e_str = "Can't find '{}' field class".format(field_class_str)
+                raise ValidationError({field_name: e_str})
 
-            field_args = defn.get("field_args" , list())
+            field_args = defn.get("field_args", list())
             field_kwargs = defn.get("field_kwargs", dict())
-            validate_method_str = defn.get("validate_method", None)
 
             try:
                 fields[field_name] = field_class(*field_args, **field_kwargs)
             except Exception as e:
                 raise ValidationError({field_name: e})
 
+            # Field validation method
+            validate_method_str = defn.get("validate_method", None)
             if validate_method_str:
                 try:
-                    global_var, local_var = dict(), dict()
-                    exec(validate_method_str, global_var, local_var)
-
-                    if "validate_method" not in local_var:
-                        raise NotImplemented("'validate_method' not found")
-
                     validate_methods.update({
-                        field_name: local_var["validate_method"]
+                        field_name: metacls._parse_validate_method(
+                            validate_method_str)
                     })
 
                 except Exception as e:
@@ -120,19 +126,15 @@ class DefinableSerializerMeta(rf_serializers.SerializerMetaclass):
         validate_method_str = serializer_defn.get("validate_method", None)
         if validate_method_str:
             try:
-                global_var, local_var = dict(), dict()
-                exec(validate_method_str, global_var, local_var)
-
-                if "validate_method" not in local_var:
-                    raise NotImplemented("'validate_method' not found")
-
                 namespace.update({
-                    "validate": local_var["validate_method"]
+                    "validate": metacls._parse_validate_method(
+                        validate_method_str)
                 })
 
             except Exception as e:
-                raise ValidationError(
-                    "Can't parse serializer validate_method: {}".format(e))
+                raise ValidationError({
+                    field_name: "Can't parse validate_method: {}".format(e)
+                })
 
         return super().__new__(
             metacls, serializer_name, bases, namespace, *kwargs)
@@ -157,8 +159,9 @@ def _defn_pre_checker(defn_data):
 
         for key in check_keys:
             if key not in defn:
-                raise ValidationError("No {} in serializer definition: {}".format(
-                    key, pprint.pformat(defn)))
+                e_str = "No {} in serializer definition: {}".format(
+                    key, pprint.pformat(defn))
+                raise ValidationError(e_str)
 
         _field_checker(defn["fields"])
 

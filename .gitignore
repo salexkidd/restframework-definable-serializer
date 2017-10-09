@@ -86,3 +86,6 @@ typings/*
 .vscode
 */docs/_build/
 .envrc
+
+cover/*
+

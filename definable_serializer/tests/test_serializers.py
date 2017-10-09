@@ -5,6 +5,7 @@ from rest_framework.serializers import CharField
 from .. import serializers as definable_serializer
 
 import os
+import yaml
 import simplejson
 from copy import deepcopy
 from collections import OrderedDict
@@ -273,9 +274,9 @@ class TestSerializer(TestCase):
         with self.assertRaises(ValidationError):
             defined_serializer_kls = definable_serializer.build_serializer(base_defn)
 
-    def test_field_validate_method(self):
+    def test_field_and_serializer_validate_method(self):
         serializer_kls = definable_serializer.build_serializer_by_yaml_file(
-            os.path.join(TEST_DATA_FILE_DIR, "test_clean_method.yml"))
+            os.path.join(TEST_DATA_FILE_DIR, "test_field_and_serializer_validate_method.yml"))
 
         # Incorrect data
         serializer = serializer_kls(data={
@@ -284,10 +285,36 @@ class TestSerializer(TestCase):
         })
         self.assertFalse(serializer.is_valid())
 
-        # Correct data
+        # Correct data. But test_field_two is not same field_one
         serializer = serializer_kls(data={
             "test_field_one": "correct_data",
             "test_field_two": "Hi",
         })
+        self.assertFalse(serializer.is_valid())
+        self.assertIn("test_field_two", serializer.errors)
 
+        # All Correct.
+        serializer = serializer_kls(data={
+            "test_field_one": "correct_data",
+            "test_field_two": "correct_data",
+        })
         self.assertTrue(serializer.is_valid())
+
+    def test_field_and_serializer_validate_but_has_prolem_string(self):
+        correct_serializer_define_data = None
+        with open(os.path.join(TEST_DATA_FILE_DIR, "test_field_and_serializer_validate_method.yml"), "r") as fh:
+            correct_serializer_define_data = yaml.load(fh)
+
+        # For Field
+        wrong_field_validate_method = deepcopy(correct_serializer_define_data)
+        wrong_field_validate_method["main"]["fields"][0]["validate_method"] = "it is not function ;)"
+
+        with self.assertRaises(ValidationError):
+            serializer_kls = definable_serializer.build_serializer(wrong_field_validate_method)
+
+        # For Serializer
+        wrong_serializer_validate_method = deepcopy(correct_serializer_define_data)
+        wrong_serializer_validate_method["main"]["validate_method"] = "it is not function ;)"
+
+        with self.assertRaises(ValidationError):
+            serializer_kls = definable_serializer.build_serializer(wrong_serializer_validate_method)

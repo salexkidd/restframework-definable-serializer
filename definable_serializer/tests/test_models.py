@@ -1,3 +1,4 @@
+from django import forms
 from django.db import models
 from django.test import TestCase
 from django.core.exceptions import ValidationError
@@ -90,6 +91,15 @@ class AbstractFieldTest:
         with self.assertRaises(ValidationError):
             test_model.full_clean()
 
+    def test_render_form(self):
+        class TestForm(forms.ModelForm):
+            class Meta:
+                fields = "__all__"
+                model = self.model_class
+
+        form = TestForm()
+        form.as_table()
+        form.as_p()
 
 class TestJSONField(AbstractFieldTest, TestCase):
     model_class = ExampleJSONModel
