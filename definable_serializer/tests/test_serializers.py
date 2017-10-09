@@ -273,15 +273,21 @@ class TestSerializer(TestCase):
         with self.assertRaises(ValidationError):
             defined_serializer_kls = definable_serializer.build_serializer(base_defn)
 
-    def test_validate_method(self):
+    def test_field_validate_method(self):
         serializer_kls = definable_serializer.build_serializer_by_yaml_file(
             os.path.join(TEST_DATA_FILE_DIR, "test_clean_method.yml"))
 
         # Incorrect data
-        serializer = serializer_kls(data={"test_field_one": "incorrect_data"})
+        serializer = serializer_kls(data={
+            "test_field_one": "incorrect_data",
+            "test_field_two": "Hi",
+        })
         self.assertFalse(serializer.is_valid())
 
         # Correct data
-        serializer = serializer_kls(data={"test_field_one": "correct_data"})
+        serializer = serializer_kls(data={
+            "test_field_one": "correct_data",
+            "test_field_two": "Hi",
+        })
 
         self.assertTrue(serializer.is_valid())

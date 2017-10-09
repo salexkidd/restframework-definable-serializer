@@ -71,7 +71,6 @@ class DefinableSerializerMeta(rf_serializers.SerializerMetaclass):
 
             try:
                 fields[field_name] = field_class(*field_args, **field_kwargs)
-
             except Exception as e:
                 raise ValidationError({field_name: e})
 
@@ -92,7 +91,6 @@ class DefinableSerializerMeta(rf_serializers.SerializerMetaclass):
                         field_name: "Can't parse validate_method: {}".format(e)
                     })
 
-
         return fields, validate_methods
 
     @classmethod
@@ -100,16 +98,20 @@ class DefinableSerializerMeta(rf_serializers.SerializerMetaclass):
         return super().__prepare__(name, bases, **kwargs)
 
     def __new__(metacls, name, bases, namespace, **kwargs):
-        fields, validate_methods = metacls._build_fields(
-            kwargs.pop("fields_defn"),
-            kwargs.pop("serializer_classes")
+
+        # build fields
+        fields, field_validate_methods = metacls._build_fields(
+            kwargs.pop("fields_defn"), kwargs.pop("serializer_classes")
         )
+
+        # set fields
         namespace.update(fields)
 
-        for field_name, validate_method in validate_methods.items():
-            namespace.update({
-                "validate_{}".format(field_name): validate_method
-            })
+        # field validation methods
+        for field_name, validate_method in field_validate_methods.items():
+            method_name = "validate_{}".format(field_name)
+            namespace.update({method_name: validate_method})
+
 
         return super().__new__(metacls, name, bases, namespace, *kwargs)
 
@@ -147,10 +149,6 @@ def _defn_pre_checker(defn_data):
         for defn in defn_data["depending_serializers"]:
             _serializer_checker(defn)
 
-
-from rest_framework.fields import (  # NOQA # isort:skip
-    CreateOnlyDefault, CurrentUserDefault, SkipField, empty
-)
 
 class BaseDefinableSerializer(rf_serializers.Serializer):
     ...
