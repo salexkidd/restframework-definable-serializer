@@ -13,3 +13,10 @@ main:
             if value != "correct_data":
                 raise serializers.ValidationError("Wrong data")
             return value
+    - name: test_field_two
+      field: CharField
+
+  validate_method: |
+    def validate_method(self, data):
+        print(data)
+        return data

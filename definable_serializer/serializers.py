@@ -97,12 +97,16 @@ class DefinableSerializerMeta(rf_serializers.SerializerMetaclass):
     def __prepare__(metacls, name, bases, **kwargs):
         return super().__prepare__(name, bases, **kwargs)
 
-    def __new__(metacls, name, bases, namespace, **kwargs):
+    def __new__(metacls, serializer_defn, bases, namespace, **kwargs):
+
+        # serializer_name
+        serializer_name = serializer_defn["name"]
+        fields_defn = serializer_defn["fields"]
+        serializer_classes = kwargs.pop("serializer_classes")
 
         # build fields
         fields, field_validate_methods = metacls._build_fields(
-            kwargs.pop("fields_defn"), kwargs.pop("serializer_classes")
-        )
+            fields_defn, serializer_classes)
 
         # set fields
         namespace.update(fields)
@@ -112,8 +116,26 @@ class DefinableSerializerMeta(rf_serializers.SerializerMetaclass):
             method_name = "validate_{}".format(field_name)
             namespace.update({method_name: validate_method})
 
+        # serializer validate method
+        validate_method_str = serializer_defn.get("validate_method", None)
+        if validate_method_str:
+            try:
+                global_var, local_var = dict(), dict()
+                exec(validate_method_str, global_var, local_var)
 
-        return super().__new__(metacls, name, bases, namespace, *kwargs)
+                if "validate_method" not in local_var:
+                    raise NotImplemented("'validate_method' not found")
+
+                namespace.update({
+                    "validate": local_var["validate_method"]
+                })
+
+            except Exception as e:
+                raise ValidationError(
+                    "Can't parse serializer validate_method: {}".format(e))
+
+        return super().__new__(
+            metacls, serializer_name, bases, namespace, *kwargs)
 
     def __init__(cls, name, bases, namespace, **kwargs):
         super().__init__(name, bases, namespace)
@@ -159,7 +181,6 @@ def build_serializer(defn_data):
     def _build_serializer_class(serializer_defn):
 
         kwargs = {
-            "fields_defn": serializer_defn["fields"],
             "serializer_classes": serializer_classes,
         }
 
@@ -171,7 +192,7 @@ def build_serializer(defn_data):
         }
 
         return DefinableSerializerMeta(
-            serializer_name, _base_classes, **namespace, **kwargs)
+            serializer_defn, _base_classes, **namespace, **kwargs)
 
     _base_classes = (BaseDefinableSerializer,)
     serializer_classes = dict()
