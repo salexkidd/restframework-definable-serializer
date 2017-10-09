@@ -1,0 +1,17 @@
+general:
+  branches:
+    only:
+      - develop
+
+machine:
+  python:
+    version: 3.6.1
+
+dependencies:
+  override:
+    - pip install -U pip setuptools tox
+    - tox --notes
+
+test:
+  override:
+    - tox -e coverage --recreate
