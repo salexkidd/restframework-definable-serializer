@@ -14,4 +14,4 @@ dependencies:
 
 test:
   override:
-    - tox -e coverage --recreate
+    - tox --recreate
