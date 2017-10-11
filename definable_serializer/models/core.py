@@ -32,3 +32,6 @@ class AbstractDefinitiveSerializerModel(models.Model):
             return self._get_serializer(field_name)
 
         type(self).__getattribute__(self, name)
+
+    class Meta:
+        abstract = True

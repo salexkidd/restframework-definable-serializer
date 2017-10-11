@@ -6,7 +6,9 @@ from ..serializers import build_serializer
 from copy import deepcopy
 from codemirror2.widgets import CodeMirrorEditor
 from jsonfield.fields import JSONField
-from yamlfield.fields import YAMLField
+# from yamlfield.fields import YAMLField
+from .compat import YAMLField
+
 import simplejson
 
 _CODE_MIRROR_OPTION = {
@@ -26,8 +28,8 @@ _CODE_MIRROR_OPTION = {
 _CODE_MIRROR_OPTION_FOR_YAML = deepcopy(_CODE_MIRROR_OPTION)
 _CODE_MIRROR_OPTION_FOR_JSON = deepcopy(_CODE_MIRROR_OPTION)
 
-_CODE_MIRROR_OPTION_FOR_YAML["modes"] = "yaml"
-_CODE_MIRROR_OPTION_FOR_JSON["modes"] = "json"
+_CODE_MIRROR_OPTION_FOR_YAML["modes"] = ["yaml"]
+_CODE_MIRROR_OPTION_FOR_JSON["modes"] = ["json"]
 
 __all__ = (
     "DefinableSerializerByJSONField",
