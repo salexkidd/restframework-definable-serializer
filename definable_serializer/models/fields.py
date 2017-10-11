@@ -6,30 +6,31 @@ from ..serializers import build_serializer
 from copy import deepcopy
 from codemirror2.widgets import CodeMirrorEditor
 from jsonfield.fields import JSONField
-# from yamlfield.fields import YAMLField
 from .compat import YAMLField
 
-import simplejson
+import json
+from jsonfield import utils as jsonfield_utils
+
 
 _CODE_MIRROR_OPTION = {
     "options": {
-        'mode': 'yaml',
         'lineNumbers': True,
         'tabSize': 2,
         'indentUnit': 2,
         'indentWithTabs': False,
         'theme': "monokai",
+        'lineWrapping': True
     },
-    "modes": ['yaml'],
     "themes": ["monokai"],
     "script_template": "admin/definable_serializer/codemirror_script.html",
 }
 
-_CODE_MIRROR_OPTION_FOR_YAML = deepcopy(_CODE_MIRROR_OPTION)
 _CODE_MIRROR_OPTION_FOR_JSON = deepcopy(_CODE_MIRROR_OPTION)
+_CODE_MIRROR_OPTION_FOR_YAML = deepcopy(_CODE_MIRROR_OPTION)
 
-_CODE_MIRROR_OPTION_FOR_YAML["modes"] = ["yaml"]
-_CODE_MIRROR_OPTION_FOR_JSON["modes"] = ["json"]
+_CODE_MIRROR_OPTION_FOR_JSON["options"]["mode"] = "javascript"
+_CODE_MIRROR_OPTION_FOR_YAML["options"]["mode"] = "yaml"
+
 
 __all__ = (
     "DefinableSerializerByJSONField",
@@ -39,19 +40,27 @@ __all__ = (
 
 class AbstractDefinableSerializerField:
     def clean(self, value, *args, **kwargs):
+        cleaned_data = super().clean(value, *args, **kwargs)
         try:
-            value = super().clean(value, *args, **kwargs)
-            build_serializer(value)
+            build_serializer(cleaned_data)
 
         except Exception as except_obj:
             raise ValidationError("Invalid Format!: {}".format(except_obj))
 
-        return value
+        return cleaned_data
+
+
+class CodeMirrorWidgetForJSON(CodeMirrorEditor):
+    def render(self, name, value, attrs=None, **kwargs):
+        value = json.dumps(value, ensure_ascii=False, indent=2,
+                           default=jsonfield_utils.default)
+
+        return super().render(name, value, attrs=attrs, **kwargs)
 
 
 class DefinableSerializerByJSONField(AbstractDefinableSerializerField, JSONField):
     def formfield(self, **kwargs):
-        kwargs["widget"] = CodeMirrorEditor(**_CODE_MIRROR_OPTION_FOR_JSON)
+        kwargs["widget"] = CodeMirrorWidgetForJSON(**_CODE_MIRROR_OPTION_FOR_YAML)
         return super().formfield(**kwargs)
 
 
