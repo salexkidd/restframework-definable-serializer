@@ -13,8 +13,6 @@ get_serializer_regex = re.compile("^get_(.*)_serializer_class$")
 
 __all__ = (
     "AbstractDefinitiveSerializerModel",
-    "DefinableSerializerByJSONField",
-    "DefinableSerializerByYAMLField",
 )
 
 

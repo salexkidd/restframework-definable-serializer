@@ -5,7 +5,7 @@ setup(
     name='drf-definable-serializer',
     author = "salexkidd",
     author_email = "salexkidd@gmail.com",
-    # url = "https://github.com/salexkidd/django_malice/",
+    url = "https://github.com/salexkidd/drf-definable-serializer",
     description='drf-definable-serializer',
     keywords = ["django", "restframework", "serializer"],
     version='0.1',

@@ -33,6 +33,7 @@ _CODE_MIRROR_OPTION_FOR_YAML["options"]["mode"] = "yaml"
 
 
 __all__ = (
+    "AbstractDefinableSerializerField",
     "DefinableSerializerByJSONField",
     "DefinableSerializerByYAMLField",
 )
@@ -40,8 +41,8 @@ __all__ = (
 
 class AbstractDefinableSerializerField:
     def clean(self, value, *args, **kwargs):
-        cleaned_data = super().clean(value, *args, **kwargs)
         try:
+            cleaned_data = super().clean(value, *args, **kwargs)
             build_serializer(cleaned_data)
 
         except Exception as except_obj:
@@ -52,15 +53,20 @@ class AbstractDefinableSerializerField:
 
 class CodeMirrorWidgetForJSON(CodeMirrorEditor):
     def render(self, name, value, attrs=None, **kwargs):
-        value = json.dumps(value, ensure_ascii=False, indent=2,
-                           default=jsonfield_utils.default)
+
+        if isinstance(value, dict):
+            value = json.dumps(
+                value, ensure_ascii=False, indent=2, default=jsonfield_utils.default)
+        else:
+            value.replace(r"\r\n", r"\n")
 
         return super().render(name, value, attrs=attrs, **kwargs)
+    ...
 
 
 class DefinableSerializerByJSONField(AbstractDefinableSerializerField, JSONField):
     def formfield(self, **kwargs):
-        kwargs["widget"] = CodeMirrorWidgetForJSON(**_CODE_MIRROR_OPTION_FOR_YAML)
+        kwargs["widget"] = CodeMirrorWidgetForJSON(**_CODE_MIRROR_OPTION_FOR_JSON)
         return super().formfield(**kwargs)
 
 

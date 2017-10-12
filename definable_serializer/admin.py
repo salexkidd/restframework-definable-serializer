@@ -2,18 +2,7 @@ from django.contrib import admin
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
 
-from definable_serializer.models import (
-    DefinableSerializerByJSONField,
-    DefinableSerializerByYAMLField,
-)
-
-csrf_protect_m = method_decorator(csrf_protect)
-
-
-definable_serializer_classes = (
-    DefinableSerializerByJSONField,
-    DefinableSerializerByYAMLField,
-)
+from definable_serializer.models import AbstractDefinableSerializerField
 
 
 class DefinableSerializerAdmin(admin.ModelAdmin):
@@ -27,13 +16,14 @@ class DefinableSerializerAdmin(admin.ModelAdmin):
         instance = self.model.objects.get(pk=object_id)
 
         for field in self.model._meta.fields:
-            if any([isinstance(field, kls) for kls in definable_serializer_classes]):
+            if isinstance(field, AbstractDefinableSerializerField):
                 field_obj = getattr(instance, field.name)
+
                 try:
                     serializer = getattr(
                         instance, "get_{}_serializer_class".format(field.name)
                     )()()
-                    setattr(serializer, "name", serializer.__class__.__name__)
+                    setattr(serializer, "serializer_name", serializer.__class__.__name__)
                     extra_context["drf_definable_serializers"][field.name] = serializer
 
                 except Exception as e:

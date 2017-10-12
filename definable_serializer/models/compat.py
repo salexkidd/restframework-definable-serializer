@@ -23,8 +23,9 @@ class YAMLField(YAMLField):
         try:
             if isinstance(value, six.string_types):
                 return ruamel_yaml.load(value, ruamel_yaml.RoundTripLoader)
-        except ValueError:
-            raise ValidationError("Enter valid YAML")
+        except Exception:
+            raise e
+
         return value
 
     def get_prep_value(self, value):
