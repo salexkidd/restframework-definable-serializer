@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 with open("README.md") as f:
     long_description = f.read()
@@ -11,8 +11,15 @@ setup(
     description='restframework-definable-serializer',
     long_description=long_description,
     keywords = ["django", "restframework", "serializer"],
-    version='0.1',
-    packages=['definable_serializer',],
+    version='0.1.5',
+    packages=find_packages(),
+    package_data={
+        'definable_serializer': [
+            'templates/admin/definable_serializer/*.html',
+            '../README.md',
+            '../LICENSE'
+        ]},
+
     license="MIT",
     install_requires=[
         "djangorestframework>=3.7.0",
