@@ -11,7 +11,7 @@ class DefinableSerializerAdmin(admin.ModelAdmin):
     def change_view(self, request, object_id, form_url='', extra_context=None):
 
         extra_context = extra_context or dict()
-        extra_context["drf_definable_serializers"] = dict()
+        extra_context["restframework_definable_serializers"] = dict()
 
         instance = self.model.objects.get(pk=object_id)
 
@@ -24,7 +24,7 @@ class DefinableSerializerAdmin(admin.ModelAdmin):
                         instance, "get_{}_serializer_class".format(field.name)
                     )()()
                     setattr(serializer, "serializer_name", serializer.__class__.__name__)
-                    extra_context["drf_definable_serializers"][field.name] = serializer
+                    extra_context["restframework_definable_serializers"][field.name] = serializer
 
                 except Exception as e:
                     ...

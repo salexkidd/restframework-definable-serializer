@@ -1,15 +1,19 @@
 from setuptools import setup
 
+with open("README.md") as f:
+    long_description = f.read()
 
 setup(
-    name='drf-definable-serializer',
+    name='restframework-definable-serializer',
     author = "salexkidd",
     author_email = "salexkidd@gmail.com",
-    url = "https://github.com/salexkidd/drf-definable-serializer",
-    description='drf-definable-serializer',
+    url = "https://github.com/salexkidd/restframework-definable-serializer",
+    description='restframework-definable-serializer',
+    long_description=long_description,
     keywords = ["django", "restframework", "serializer"],
     version='0.1',
     packages=['definable_serializer',],
+    license="MIT",
     install_requires=[
         "djangorestframework>=3.7.0",
         "django-codemirror2>=0.2",

@@ -5,7 +5,7 @@
 
 <fieldset class="module aligned ">
     <h2>Serializers definition</h2>
-    {% for field_name, serializer in drf_definable_serializers.items %}
+    {% for field_name, serializer in restframework_definable_serializers.items %}
     <h3>field of {{ field_name }}</h3>
     <div class="form-row field-serializer_field">
         <label class="required" for="id_serializer_field">{{ serializer.serializer_name }}</label>

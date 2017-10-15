@@ -111,7 +111,7 @@ class TestSerializer(TestCase):
             with self.assertRaises(ValidationError):
                 definable_serializer.build_serializer(defn)
 
-    def test_all_type_drf_fields(self):
+    def test_all_type_restframework_fields(self):
         defined_serializer_kls = definable_serializer.build_serializer_by_json_file(
             os.path.join(TEST_DATA_FILE_DIR, "test_all_type_fields.json"))
 

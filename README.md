@@ -1,10 +1,10 @@
-# drf-definable-serializer
+# restframework-definable-serializer
 
-drf-definable-serializer is definable serializer by JSON or YAML format.
+restframework-definable-serializer is definable serializer by JSON or YAML format.
 
 
 # Feature
-- It can define drf serializer by JSON or YAML
+- It can define restframework serializer by JSON or YAML
 - It can write and modify serializer by django admin pages.
 
 
@@ -23,10 +23,10 @@ drf-definable-serializer is definable serializer by JSON or YAML format.
 
 # Quick start
 
-1. Install drf-definable-serializer
+1. Install restframework-definable-serializer
 
 ```
-pip install drf-definable-serializer
+pip install restframework-definable-serializer
 ```
 
 2. Add "definable_serializer" and "codemirror2" to your INSTALLED_APPS setting like this:
@@ -41,4 +41,4 @@ INSTALLED_APPS = [
 ```
 
 # samples
-You can try drf-definable-serializer. see example_project
+You can try restframework-definable-serializer. see example_project
