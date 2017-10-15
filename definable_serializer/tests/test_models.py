@@ -111,7 +111,7 @@ class TestYAMLField(AbstractFieldTest, TestCase):
 
 ##############################################################################
 class AbstractTestModel:
-    def test_get_serializer(self):
+    def test_get_serializer_class(self):
         test_model = self.model_class(foo_bar_baz=_correct_single_definition_data)
         test_model.full_clean()
 
@@ -119,7 +119,7 @@ class AbstractTestModel:
         serializer = test_model.get_foo_bar_baz_serializer_class()
         self.assertTrue(issubclass(serializer, rf_serializers.Serializer))
 
-    def test_get_serializer_but_not_in_fields(self):
+    def test_get_serializer_class_but_not_in_fields(self):
         test_model = self.model_class(foo_bar_baz=_correct_single_definition_data)
         test_model.full_clean()
 

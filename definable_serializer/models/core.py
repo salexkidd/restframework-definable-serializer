@@ -1,14 +1,11 @@
 from django.db import models
 
-from .fields import (
-    DefinableSerializerByJSONField,
-    DefinableSerializerByYAMLField,
-)
+from .fields import AbstractDefinableSerializerField
 from ..serializers import build_serializer
 
 import re
 
-get_serializer_regex = re.compile("^get_(.*)_serializer_class$")
+get_serializer_regex = re.compile("^__get_(.*)_serializer_class$")
 
 
 __all__ = (
@@ -17,6 +14,16 @@ __all__ = (
 
 
 class AbstractDefinitiveSerializerModel(models.Model):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.__get_class_serialier_methods()
+
+    def __get_class_serialier_methods(self):
+        for field in self._meta.fields:
+            method_name = "get_{}_serializer_class".format(field.name)
+            if isinstance(field, AbstractDefinableSerializerField):
+                setattr(self, method_name, getattr(self, "__" + method_name))
 
     def _get_serializer(self, field_name):
         def _func():
