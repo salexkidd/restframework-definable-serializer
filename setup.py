@@ -11,7 +11,7 @@ setup(
     description='restframework-definable-serializer',
     long_description=long_description,
     keywords = ["django", "restframework", "serializer"],
-    version='0.1.5',
+    version='0.1.6',
     packages=find_packages(),
     package_data={
         'definable_serializer': [
