@@ -25,6 +25,6 @@ main:
         from rest_framework import serializers
         if data["test_field_one"] != data["test_field_two"]:
             raise serializers.ValidationError({
-                "test_field_two": "Not same data!"
+                "test_field_two": "Please put the same as 'Test Field One'."
             })
         return data

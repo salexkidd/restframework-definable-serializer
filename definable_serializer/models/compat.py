@@ -2,10 +2,10 @@ import six
 import ruamel.yaml as ruamel_yaml
 from django.core.exceptions import ValidationError
 
-from yamlfield.fields import YAMLField
+from yamlfield.fields import YAMLField as OriginalYAMLField
 
 
-class YAMLField(YAMLField):
+class YAMLField(OriginalYAMLField):
 
     def _unicode_dump(self, value):
         value = ruamel_yaml.dump(
@@ -23,7 +23,7 @@ class YAMLField(YAMLField):
         try:
             if isinstance(value, six.string_types):
                 return ruamel_yaml.load(value, ruamel_yaml.RoundTripLoader)
-        except Exception:
+        except Exception as e:
             raise e
 
         return value
@@ -31,8 +31,8 @@ class YAMLField(YAMLField):
     def get_prep_value(self, value):
         if not value or value == "":
             return ""
-        if isinstance(value, (dict, list)):
-            value = self._unicode_dump(value)
+
+        value = self._unicode_dump(value)
         return value
 
     def value_from_object(self, obj):

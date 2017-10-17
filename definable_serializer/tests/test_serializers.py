@@ -6,7 +6,6 @@ from .. import serializers as definable_serializer
 
 import os
 import yaml
-import simplejson
 from copy import deepcopy
 from collections import OrderedDict
 
@@ -307,14 +306,23 @@ class TestSerializer(TestCase):
 
         # For Field
         wrong_field_validate_method = deepcopy(correct_serializer_define_data)
-        wrong_field_validate_method["main"]["fields"][0]["validate_method"] = "it is not function ;)"
+        wrong_field_validate_method["main"]["fields"][0]["validate_method"] = 'validate_method = "foobar"'
+        with self.assertRaises(ValidationError) as e:
+            definable_serializer.build_serializer(wrong_field_validate_method)
 
-        with self.assertRaises(ValidationError):
-            serializer_kls = definable_serializer.build_serializer(wrong_field_validate_method)
+
+        wrong_field_validate_method = deepcopy(correct_serializer_define_data)
+        wrong_field_validate_method["main"]["fields"][0]["validate_method"] = "It's not a func!!"
+        with self.assertRaises(ValidationError) as e:
+            definable_serializer.build_serializer(wrong_field_validate_method)
 
         # For Serializer
         wrong_serializer_validate_method = deepcopy(correct_serializer_define_data)
-        wrong_serializer_validate_method["main"]["validate_method"] = "it is not function ;)"
+        wrong_serializer_validate_method["main"]["validate_method"] = 'validate_method = "foobar"'
+        with self.assertRaises(ValidationError):
+            serializer_kls = definable_serializer.build_serializer(wrong_serializer_validate_method)
 
+        wrong_serializer_validate_method = deepcopy(correct_serializer_define_data)
+        wrong_serializer_validate_method["main"]["validate_method"] = "It's not a func"
         with self.assertRaises(ValidationError):
             serializer_kls = definable_serializer.build_serializer(wrong_serializer_validate_method)

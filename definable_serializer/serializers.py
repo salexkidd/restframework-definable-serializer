@@ -32,8 +32,14 @@ class DefinableSerializerMeta(rf_serializers.SerializerMetaclass):
     @classmethod
     def _parse_validate_method(metacls, method_str):
         global_var, local_var = dict(), dict()
-        exec(method_str, global_var, local_var)
-        validate_method = local_var["validate_method"]
+
+        try:
+            exec(method_str, global_var, local_var)
+            validate_method = local_var["validate_method"]
+
+        except Exception as e:
+            raise ValidationError(e)
+
         if type(validate_method) is not types.FunctionType:
             raise ValidationError("Not a function")
 
@@ -88,8 +94,7 @@ class DefinableSerializerMeta(rf_serializers.SerializerMetaclass):
             if validate_method_str:
                 try:
                     validate_methods.update({
-                        field_name: metacls._parse_validate_method(
-                            validate_method_str)
+                        field_name: metacls._parse_validate_method(validate_method_str)
                     })
 
                 except Exception as e:
