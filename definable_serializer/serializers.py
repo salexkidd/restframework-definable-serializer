@@ -12,7 +12,7 @@ import pprint
 import pydoc
 import types
 import yaml
-
+import warnings
 
 NOT_AVAILABLE_FIELDS = (
     rf_serializers.ListField,
@@ -40,7 +40,7 @@ class DefinableSerializerMeta(rf_serializers.SerializerMetaclass):
         except Exception as e:
             raise ValidationError(e)
 
-        if type(validate_method) is not types.FunctionType:
+        if not isinstance(validate_method, types.FunctionType):
             raise ValidationError("Not a function")
 
         return validate_method
@@ -89,17 +89,28 @@ class DefinableSerializerMeta(rf_serializers.SerializerMetaclass):
             except Exception as e:
                 raise ValidationError({field_name: e})
 
-            # Field validation method
-            validate_method_str = defn.get("validate_method", None)
-            if validate_method_str:
+            # Field validate method
+            if defn.get("validate_method", None):
+                warnings.warn(
+                    "'validate_method' will be deprecated in the future. "
+                    "Please change to field_validate_method.",
+                    PendingDeprecationWarning
+                )
+
+            field_validate_method = defn.get(
+                "validate_method", None
+            ) or defn.get(
+                "field_validate_method", None
+            )
+            if field_validate_method:
                 try:
                     validate_methods.update({
-                        field_name: metacls._parse_validate_method(validate_method_str)
+                        field_name: metacls._parse_validate_method(field_validate_method)
                     })
 
                 except Exception as e:
                     raise ValidationError({
-                        field_name: "Can't parse validate_method: {}".format(e)
+                        field_name: "Can't parse {} field_validate_method: {}".format(field_name, e)
                     })
 
         return fields, validate_methods
@@ -122,23 +133,35 @@ class DefinableSerializerMeta(rf_serializers.SerializerMetaclass):
         # set fields
         namespace.update(fields)
 
-        # field validation methods
+        # field validate methods
         for field_name, validate_method in field_validate_methods.items():
             method_name = "validate_{}".format(field_name)
             namespace.update({method_name: validate_method})
 
         # serializer validate method
-        validate_method_str = serializer_defn.get("validate_method", None)
-        if validate_method_str:
+        if serializer_defn.get("validate_method", None):
+            warnings.warn(
+                "'validate_method' will be deprecated in the future. "
+                "Please change to serializer_validate_method.",
+                PendingDeprecationWarning
+            )
+
+        serializer_validate_method = serializer_defn.get(
+            "serializer_validate_method", None
+        ) or serializer_defn.get(
+            "validate_method", None
+        )
+
+        if serializer_validate_method:
             try:
                 namespace.update({
                     "validate": metacls._parse_validate_method(
-                        validate_method_str)
+                        serializer_validate_method)
                 })
 
             except Exception as e:
                 raise ValidationError({
-                    field_name: "Can't parse validate_method: {}".format(e)
+                    field_name: "Can't parse serializer_validate_method: {}".format(e)
                 })
 
         return super().__new__(

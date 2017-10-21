@@ -4,12 +4,10 @@ main:
     - name: test_field_one
       field: CharField
       field_kwargs:
-        label: Test Field One
         required: true
-        help_text: Please enter group name
 
       # Field validation method
-      validate_method: |
+      field_validate_method: |
         def validate_method(self, value):
             from rest_framework import serializers
             if value != "correct_data":
@@ -18,9 +16,10 @@ main:
 
     - name: test_field_two
       field: CharField
+      field_kwargs:
+        required: true
 
-  # Serializer  validation method
-  validate_method: |
+  serializer_validate_method: |
     def validate_method(self, data):
         from rest_framework import serializers
         if data["test_field_one"] != data["test_field_two"]:

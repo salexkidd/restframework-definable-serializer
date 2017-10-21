@@ -306,23 +306,22 @@ class TestSerializer(TestCase):
 
         # For Field
         wrong_field_validate_method = deepcopy(correct_serializer_define_data)
-        wrong_field_validate_method["main"]["fields"][0]["validate_method"] = 'validate_method = "foobar"'
+        wrong_field_validate_method["main"]["fields"][0]["field_validate_method"] = 'validate_method = "foobar"'
         with self.assertRaises(ValidationError) as e:
             definable_serializer.build_serializer(wrong_field_validate_method)
 
-
         wrong_field_validate_method = deepcopy(correct_serializer_define_data)
-        wrong_field_validate_method["main"]["fields"][0]["validate_method"] = "It's not a func!!"
+        wrong_field_validate_method["main"]["fields"][0]["field_validate_method"] = "It's not a func!!"
         with self.assertRaises(ValidationError) as e:
             definable_serializer.build_serializer(wrong_field_validate_method)
 
         # For Serializer
         wrong_serializer_validate_method = deepcopy(correct_serializer_define_data)
-        wrong_serializer_validate_method["main"]["validate_method"] = 'validate_method = "foobar"'
+        wrong_serializer_validate_method["main"]["serializer_validate_method"] = 'validate_method = "foobar"'
         with self.assertRaises(ValidationError):
             serializer_kls = definable_serializer.build_serializer(wrong_serializer_validate_method)
 
         wrong_serializer_validate_method = deepcopy(correct_serializer_define_data)
-        wrong_serializer_validate_method["main"]["validate_method"] = "It's not a func"
+        wrong_serializer_validate_method["main"]["serializer_validate_method"] = "It's not a func"
         with self.assertRaises(ValidationError):
             serializer_kls = definable_serializer.build_serializer(wrong_serializer_validate_method)

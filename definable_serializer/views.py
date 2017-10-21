@@ -10,7 +10,7 @@ from rest_framework import generics
 from rest_framework.response import Response
 
 
-class ShowSerializer(generics.CreateAPIView):
+class ShowSerializerInfo(generics.CreateAPIView):
 
     def dispatch(self, *args, **kwargs):
         self._url_data = resolve(self.request.path)

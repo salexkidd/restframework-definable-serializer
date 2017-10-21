@@ -6,7 +6,7 @@ from django.template import RequestContext
 from rest_framework.renderers import AdminRenderer
 
 from definable_serializer.models import AbstractDefinableSerializerField
-from definable_serializer.views import ShowSerializer
+from definable_serializer.views import ShowSerializerInfo
 
 from functools import update_wrapper
 
@@ -55,7 +55,7 @@ class DefinableSerializerAdmin(admin.ModelAdmin):
         return [
             url(
                 r'(?P<pk>\d+)/(?P<field_name>.+)/show-browsable-api-view/$',
-                self.admin_site.admin_view(ShowSerializer.as_view()),
+                self.admin_site.admin_view(ShowSerializerInfo.as_view()),
                 name='%s_%s_show-browsable-api-view' % info
             ),
 
