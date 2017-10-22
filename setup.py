@@ -22,7 +22,6 @@ setup(
 
     license="MIT",
     install_requires=[
-        "djangorestframework>=3.7.0",
         "django-codemirror2>=0.2",
         "django-jsonfield>=1.0.1",
         "django-yamlfield>=1.0.3",
