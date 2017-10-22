@@ -4,10 +4,10 @@
    contain the root `toctree` directive.
 
 
-Welcome to restframework-definitive-serializer
+Welcome to restframework-definable-serializer
 ==============================================================================
 
-restframework-definitive-serializerはYAMLやJSONを用いてdjango-restframeworkの
+restframework-definable-serializerはYAMLやJSONを用いてdjango-restframeworkの
 シリアライザークラスを作成することが出来ます。
 
 特に変更が多くかかるシリアライザーを利用している場合は強力なツールになりえるでしょう。
@@ -17,9 +17,12 @@ restframework-definitive-serializerはYAMLやJSONを用いてdjango-restframewor
    :maxdepth: 4
    :caption: Contents:
 
-   first
-   define_examples
    install
+   first
+   admin_integration
+   define_examples
+   serializer_fields
+
    definable_serializer
 
 

@@ -12,6 +12,13 @@
     pip install --upgrade restframework-definable-serializer
 
 
+.. warning::
+
+    もしdjangoとrestframeworkがインストールされていない場合は先にインストールを済ませておいてください::
+
+        pip install --upgrade django djangorestframework
+
+
 INSTALLED_APPSへの追加
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
