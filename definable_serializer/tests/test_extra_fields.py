@@ -70,10 +70,9 @@ class TestMultipleCheckboxFieldAndNotRequired(TestCase):
 
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-class NonNullableFieldSerializer(rf_serializers.Serializer):
-    target_field = extra_fields.NonNullableChoiceField(
+class ChoiceWithBlankFieldSerializer(rf_serializers.Serializer):
+    target_field = extra_fields.ChoiceWithBlankField(
         (
-            ("", "---- Please choice ----"),
             (1, "one"),
             (2, "two"),
             (3, "three"),
@@ -81,21 +80,21 @@ class NonNullableFieldSerializer(rf_serializers.Serializer):
     )
 
 
-class TestNonNullableField(TestCase):
+class TestChoiceWithBlankField(TestCase):
     def test_choice_null_value(self):
-        serializer = NonNullableFieldSerializer(
+        serializer = ChoiceWithBlankFieldSerializer(
             data={"target_field": ""}
         )
         self.assertFalse(serializer.is_valid())
 
     def test_choice_valid_value(self):
-        serializer = NonNullableFieldSerializer(
+        serializer = ChoiceWithBlankFieldSerializer(
             data={"target_field": "1"}
         )
         self.assertTrue(serializer.is_valid())
 
     def test_choice_invalid_value(self):
-        serializer = NonNullableFieldSerializer(
+        serializer = ChoiceWithBlankFieldSerializer(
             data={"target_field": "-1"}
         )
         self.assertFalse(serializer.is_valid())

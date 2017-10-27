@@ -5,11 +5,10 @@ from ..serializers import build_serializer
 
 from copy import deepcopy
 from codemirror2.widgets import CodeMirrorEditor
-from jsonfield.fields import JSONField
-from .compat import YAMLField
+# from jsonfield.fields import JSONField
 
-import json
-from jsonfield import utils as jsonfield_utils
+
+from .compat import YAMLField, JSONField
 
 
 _CODE_MIRROR_OPTION = {
@@ -40,33 +39,21 @@ __all__ = (
 
 
 class AbstractDefinableSerializerField:
+
     def clean(self, value, *args, **kwargs):
         try:
             cleaned_data = super().clean(value, *args, **kwargs)
             build_serializer(cleaned_data)
 
         except Exception as except_obj:
-            raise ValidationError("Invalid Format!: {}".format(except_obj))
+            raise ValidationError("Invalid define Format!: {}".format(except_obj))
 
         return cleaned_data
 
 
-class CodeMirrorWidgetForJSON(CodeMirrorEditor):
-    def render(self, name, value, attrs=None, **kwargs):
-
-        if isinstance(value, dict):
-            value = json.dumps(
-                value, ensure_ascii=False, indent=2, default=jsonfield_utils.default)
-        else:
-            value.replace(r"\r\n", r"\n")
-
-        return super().render(name, value, attrs=attrs, **kwargs)
-    ...
-
-
 class DefinableSerializerByJSONField(AbstractDefinableSerializerField, JSONField):
     def formfield(self, **kwargs):
-        kwargs["widget"] = CodeMirrorWidgetForJSON(**_CODE_MIRROR_OPTION_FOR_JSON)
+        kwargs["widget"] = CodeMirrorEditor(**_CODE_MIRROR_OPTION_FOR_JSON)
         return super().formfield(**kwargs)
 
 

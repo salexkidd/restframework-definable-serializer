@@ -8,7 +8,7 @@ Welcome to restframework-definable-serializer
 ==============================================================================
 
 restframework-definable-serializerはYAMLやJSONを用いてdjango-restframeworkの
-シリアライザークラスを作成することが出来ます。
+シリアライザークラスを作成することができます。
 
 特に変更が多くかかるシリアライザーを利用している場合は強力なツールになりえるでしょう。
 
@@ -19,9 +19,12 @@ restframework-definable-serializerはYAMLやJSONを用いてdjango-restframework
 
    install
    first
-   admin_integration
-   define_examples
-   serializer_fields
+   example_project
+   define_serializer
+   model_fields
+   extend_modeladmin
+   extra_serializer_fields
+   misc
 
    definable_serializer
 

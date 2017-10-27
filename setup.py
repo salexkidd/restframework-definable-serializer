@@ -11,19 +11,17 @@ setup(
     description='restframework-definable-serializer',
     long_description=long_description,
     keywords = ["django", "restframework", "serializer"],
-    version='0.1.6',
+    version='0.1.8',
     packages=find_packages(),
     package_data={
         'definable_serializer': [
             'templates/admin/definable_serializer/*.html',
-            '../README.md',
-            '../LICENSE'
         ]},
 
     license="MIT",
     install_requires=[
         "django-codemirror2>=0.2",
-        "django-jsonfield>=1.0.1",
+        "jsonfield>=2.0.2",
         "django-yamlfield>=1.0.3",
         "PyYAML>=3.12",
         "ruamel.yaml>=0.13.5",

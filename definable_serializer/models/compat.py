@@ -1,8 +1,10 @@
+from django.core.exceptions import ValidationError
+from django.core.serializers.json import DjangoJSONEncoder
+
 import six
 import ruamel.yaml as ruamel_yaml
-from django.core.exceptions import ValidationError
-
 from yamlfield.fields import YAMLField as OriginalYAMLField
+from jsonfield.fields import JSONField as OriginalJSONField
 
 
 class YAMLField(OriginalYAMLField):
@@ -40,3 +42,23 @@ class YAMLField(OriginalYAMLField):
         if not value or value == "":
             return value
         return self._unicode_dump(value)
+
+
+class CustomDjangoJSONEncoder(DjangoJSONEncoder):
+    def default(self, o):
+        if isinstance(o, set):
+            return list(o)
+        else:
+            return super().default(o)
+
+
+class JSONField(OriginalJSONField):
+    def __init__(self, *args, **kwargs):
+        if not "dump_kwargs" in kwargs:
+            kwargs["dump_kwargs"] = {
+                "cls": CustomDjangoJSONEncoder,
+                "ensure_ascii": False,
+                "indent": 2,
+            }
+
+        super().__init__(*args, **kwargs)

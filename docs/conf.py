@@ -21,6 +21,13 @@
 # import sys
 # sys.path.insert(0, '/Users/Traincrash/dev/incubators/restframework-definable-serializer-project/restframework-definable-serializer/definable_serializer')
 
+import os
+import sys
+import django
+sys.path.insert(0, os.path.abspath('..'))
+os.environ['DJANGO_SETTINGS_MODULE'] = 'tests.settings'
+django.setup()
+
 
 # -- General configuration ------------------------------------------------
 

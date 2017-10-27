@@ -1,8 +1,7 @@
-# from .core import * # no-qa
-
-
+from django.db.models.fields import BLANK_CHOICE_DASH
 from rest_framework import serializers as rf_serializers
 from rest_framework import fields as rf_fields
+from copy import copy
 
 
 class CheckRequiredField(rf_fields.BooleanField):
@@ -56,17 +55,24 @@ class MultipleCheckboxField(rf_fields.MultipleChoiceField):
         return data
 
 
-class NonNullableChoiceField(rf_fields.ChoiceField):
+class ChoiceWithBlankField(rf_fields.ChoiceField):
     """
-    ChoiceWithDashedField
+    ChoiceWithBlankField
 
-    definable_serializer.extra_fields.NonNullableChoiceField
+    definable_serializer.extra_fields.ChoiceWithBlankField
     """
     custom_error_messages = {
         'this_field_is_required': 'This field is required.'
     }
 
     def __init__(self, choices, *args, **kwargs):
+        blank_choices = copy(BLANK_CHOICE_DASH)
+        blank_label = kwargs.pop("blank_label", blank_choices[0][1])
+        if blank_label:
+            blank_choices = [["", blank_label],]
+
+        choices = tuple(blank_choices + list(choices))
+
         super().__init__(choices, *args, **kwargs)
         self.error_messages.update(self.custom_error_messages)
 
@@ -88,7 +94,6 @@ class RadioField(rf_fields.ChoiceField):
             'base_template': 'radio.html',
             'inline': kwargs.pop('inline', False)
         }
-
         super().__init__(*args, **kwargs)
 
 
