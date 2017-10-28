@@ -1,8 +1,17 @@
-# from .core import * # no-qa
+"""
+Copyright 2017 salexkidd
 
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+"""
+
+from django.db.models.fields import BLANK_CHOICE_DASH
 from rest_framework import serializers as rf_serializers
 from rest_framework import fields as rf_fields
+from copy import copy
 
 
 class CheckRequiredField(rf_fields.BooleanField):
@@ -56,17 +65,24 @@ class MultipleCheckboxField(rf_fields.MultipleChoiceField):
         return data
 
 
-class NonNullableChoiceField(rf_fields.ChoiceField):
+class ChoiceWithBlankField(rf_fields.ChoiceField):
     """
-    ChoiceWithDashedField
+    ChoiceWithBlankField
 
-    definable_serializer.extra_fields.NonNullableChoiceField
+    definable_serializer.extra_fields.ChoiceWithBlankField
     """
     custom_error_messages = {
         'this_field_is_required': 'This field is required.'
     }
 
     def __init__(self, choices, *args, **kwargs):
+        blank_choices = copy(BLANK_CHOICE_DASH)
+        blank_label = kwargs.pop("blank_label", blank_choices[0][1])
+        if blank_label:
+            blank_choices = [["", blank_label],]
+
+        choices = tuple(blank_choices + list(choices))
+
         super().__init__(choices, *args, **kwargs)
         self.error_messages.update(self.custom_error_messages)
 
@@ -88,7 +104,6 @@ class RadioField(rf_fields.ChoiceField):
             'base_template': 'radio.html',
             'inline': kwargs.pop('inline', False)
         }
-
         super().__init__(*args, **kwargs)
 
 

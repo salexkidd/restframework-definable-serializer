@@ -101,6 +101,7 @@ class AbstractFieldTest:
         form.as_table()
         form.as_p()
 
+
 class TestJSONField(AbstractFieldTest, TestCase):
     model_class = ExampleJSONModel
 

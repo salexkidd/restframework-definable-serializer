@@ -1,3 +1,13 @@
+"""
+Copyright 2017 salexkidd
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+"""
+
 from django.forms.utils import ValidationError
 from django.utils.translation import ugettext_lazy as _
 
@@ -5,11 +15,10 @@ from ..serializers import build_serializer
 
 from copy import deepcopy
 from codemirror2.widgets import CodeMirrorEditor
-from jsonfield.fields import JSONField
-from .compat import YAMLField
+# from jsonfield.fields import JSONField
 
-import json
-from jsonfield import utils as jsonfield_utils
+
+from .compat import YAMLField, JSONField
 
 
 _CODE_MIRROR_OPTION = {
@@ -40,33 +49,21 @@ __all__ = (
 
 
 class AbstractDefinableSerializerField:
+
     def clean(self, value, *args, **kwargs):
         try:
             cleaned_data = super().clean(value, *args, **kwargs)
             build_serializer(cleaned_data)
 
         except Exception as except_obj:
-            raise ValidationError("Invalid Format!: {}".format(except_obj))
+            raise ValidationError("Invalid define Format!: {}".format(except_obj))
 
         return cleaned_data
 
 
-class CodeMirrorWidgetForJSON(CodeMirrorEditor):
-    def render(self, name, value, attrs=None, **kwargs):
-
-        if isinstance(value, dict):
-            value = json.dumps(
-                value, ensure_ascii=False, indent=2, default=jsonfield_utils.default)
-        else:
-            value.replace(r"\r\n", r"\n")
-
-        return super().render(name, value, attrs=attrs, **kwargs)
-    ...
-
-
 class DefinableSerializerByJSONField(AbstractDefinableSerializerField, JSONField):
     def formfield(self, **kwargs):
-        kwargs["widget"] = CodeMirrorWidgetForJSON(**_CODE_MIRROR_OPTION_FOR_JSON)
+        kwargs["widget"] = CodeMirrorEditor(**_CODE_MIRROR_OPTION_FOR_JSON)
         return super().formfield(**kwargs)
 
 
