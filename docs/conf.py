@@ -19,7 +19,6 @@
 #
 # import os
 # import sys
-# sys.path.insert(0, '/Users/Traincrash/dev/incubators/restframework-definable-serializer-project/restframework-definable-serializer/definable_serializer')
 
 import os
 import sys
