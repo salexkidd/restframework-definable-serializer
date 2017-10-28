@@ -1,0 +1,7 @@
+sphinx
+sphinx-rtd-theme
+sphinx_fontawesome
+rst2pdf
+django-sphinx
+django
+djangorestframework
