@@ -69,7 +69,7 @@ class DefinableSerializerMeta(rf_serializers.SerializerMetaclass):
         return field_class
 
     @classmethod
-    def _build_fields(metacls, fields_defn, serializer_classes):
+    def _build_fields(metacls, fields_defn, serializer_classes, allow_validate_method):
         fields = dict()
         validate_methods = dict()
 
@@ -109,6 +109,12 @@ class DefinableSerializerMeta(rf_serializers.SerializerMetaclass):
             ) or defn.get(
                 "field_validate_method", None
             )
+
+            if allow_validate_method == False and field_validate_method != None:
+                raise ValidationError({
+                    field_name: "serializer validate_method not allowed."
+                })
+
             if field_validate_method:
                 try:
                     validate_methods.update({
@@ -132,10 +138,11 @@ class DefinableSerializerMeta(rf_serializers.SerializerMetaclass):
         serializer_name = serializer_defn["name"]
         fields_defn = serializer_defn["fields"]
         serializer_classes = kwargs.pop("serializer_classes")
+        allow_validate_method = kwargs.pop("allow_validate_method", True)
 
         # build fields
         fields, field_validate_methods = metacls._build_fields(
-            fields_defn, serializer_classes)
+            fields_defn, serializer_classes, allow_validate_method)
 
         # set fields
         namespace.update(fields)
@@ -158,6 +165,9 @@ class DefinableSerializerMeta(rf_serializers.SerializerMetaclass):
         ) or serializer_defn.get(
             "validate_method", None
         )
+
+        if allow_validate_method == False and serializer_validate_method != None:
+            raise ValidationError("serializer validate_method not allowed.")
 
         if serializer_validate_method:
             try:
@@ -214,12 +224,13 @@ class BaseDefinableSerializer(rf_serializers.Serializer):
     ...
 
 
-def build_serializer(defn_data):
+def build_serializer(defn_data, allow_validate_method=True):
 
     def _build_serializer_class(serializer_defn):
 
         kwargs = {
             "serializer_classes": serializer_classes,
+            "allow_validate_method":allow_validate_method,
         }
 
         serializer_name = serializer_defn["name"]
@@ -256,21 +267,33 @@ def build_serializer(defn_data):
     return main_serializer
 
 
-def build_serializer_by_json(json_data):
-    return build_serializer(simplejson.loads(json_data))
+def build_serializer_by_json(json_data, allow_validate_method=True):
+    return build_serializer(
+        simplejson.loads(json_data),
+        allow_validate_method
+    )
 
 
-def build_serializer_by_json_file(json_file_path):
+def build_serializer_by_json_file(json_file_path, allow_validate_method=True):
     with open(json_file_path, "rb") as fh:
         reader = codecs.getreader("utf-8")
-        return build_serializer(simplejson.load(reader(fh)))
+        return build_serializer(
+            simplejson.load(reader(fh)),
+            allow_validate_method
+        )
 
 
-def build_serializer_by_yaml(yaml_data):
-    return build_serializer(yaml.load(yaml_data))
+def build_serializer_by_yaml(yaml_data, allow_validate_method=True):
+    return build_serializer(
+        yaml.load(yaml_data),
+        allow_validate_method
+    )
 
 
-def build_serializer_by_yaml_file(yaml_file_path):
+def build_serializer_by_yaml_file(yaml_file_path, allow_validate_method=True):
     with open(yaml_file_path, "rb") as fh:
         reader = codecs.getreader("utf-8")
-        return build_serializer(yaml.load(reader(fh)))
+        return build_serializer(
+            yaml.load(reader(fh)),
+            allow_validate_method
+        )

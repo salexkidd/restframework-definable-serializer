@@ -50,10 +50,14 @@ __all__ = (
 
 class AbstractDefinableSerializerField:
 
+    def __init__(self, *args, **kwargs):
+        self.allow_validate_method = kwargs.pop("allow_validate_method", True)
+        super().__init__(*args, **kwargs)
+
     def clean(self, value, *args, **kwargs):
         try:
             cleaned_data = super().clean(value, *args, **kwargs)
-            build_serializer(cleaned_data)
+            build_serializer(cleaned_data, self.allow_validate_method)
 
         except Exception as except_obj:
             raise ValidationError("Invalid define Format!: {}".format(except_obj))
