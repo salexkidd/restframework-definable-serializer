@@ -15,44 +15,6 @@ restframework-definable-serializerはYAMLやJSONを用いてdjango-restframework
 
 restframework-definable-serializerを利用することで、少しでもdjangoを利用するエンジニアの手間が減ることを願っています。
 
-
-------------------------------------------------------------------------------
-
-
-各種配布先
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-    git
-        `https://github.com/salexkidd/restframework-definable-serializer <https://github.com/salexkidd/restframework-definable-serializer>`_
-        `https://github.com/salexkidd/restframework-definable-serializer-example <https://github.com/salexkidd/restframework-definable-serializer-example>`_
-
-    pypi
-        `https://pypi.org/project/restframework-definable-serializer/ <https://pypi.org/project/restframework-definable-serializer/>`_
-        `https://pypi.python.org/pypi/restframework-definable-serializer/0.1.8 <https://pypi.python.org/pypi/restframework-definable-serializer/0.1.8>`_
-
-
-------------------------------------------------------------------------------
-
-連絡先
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-    twitter: `(@salexkidd <https://twitter.com/salexkidd>)`_
-
-
-------------------------------------------------------------------------------
-
-ライセンス
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-    Copyright 2017 salexkidd
-
-    Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-
-    The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-
 ------------------------------------------------------------------------------
 
 
@@ -65,16 +27,14 @@ restframework-definable-serializerを利用することで、少しでもdjango�
    example_project
    how_to_define_serializer
    model_fields
-   extend_modeladmin
+   extend_model_class
+   extend_modeladmin_class
    extra_serializer_fields
    misc
-
-   definable_serializer
 
 
 Indices and tables
 ==================
 
 * :ref:`genindex`
-* :ref:`modindex`
 * :ref:`search`

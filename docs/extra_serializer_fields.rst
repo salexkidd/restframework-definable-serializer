@@ -4,16 +4,12 @@
 提供するシリアライザーフィールドクラス
 ==============================================================================
 
-
-
-
-
 Zen Of Pythonの *暗示するより明示するほうがいい* という観点からdefinable-serializerでは
 **TemplateHTMLRenderer** のためにいくつかのフィールドを提供しています。
 
 .. warning::
 
-    将来的にこれらのフィールドは別パッケージとして提供をする可能性があります。
+    これらのフィールドは将来的に別パッケージとして提供される可能性があります。
 
 
 CheckRequiredField
@@ -22,7 +18,6 @@ CheckRequiredField
 必ずOnをしなければならないチェックボックスを提供します。ユーザーの意思や確認を行いたい場合に利用します。
 
 fieldには ``definable_serializer.extra_fields.CheckRequiredField`` を指定します。
-
 
 .. code-block:: yaml
 

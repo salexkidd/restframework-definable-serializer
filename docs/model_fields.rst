@@ -1,14 +1,14 @@
+.. _`model_fields`:
+
 ==============================================================================
 提供するモデルフィールドクラス
 ==============================================================================
 
-
-.. _`compat_model_fields`:
-
-
 definable-serializerではシリアライザーを記述するためのフィールドと、
 ユーザーからの入力データを保存するためのフィールドを提供しています。
 
+
+.. _`definable-serializer-fields`:
 
 シリアライザーの定義を保存するモデルフィールド
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -20,6 +20,8 @@ admin画面でテキストデータの編集を行うのは難しい話ではな
 この問題を解決するために、CodeMirror2ウィジェットを利用してハイライトサポートを行う
 2つのシリアライザー定義用のフィールドを用意しています。
 
+
+.. _`definable_serializer_by_yaml_field_class`:
 
 DefinableSerializerByYAMLField
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -40,6 +42,8 @@ DefinableSerializerByYAMLFieldはdjango-yamlfield
 
 .. figure:: imgs/codemirror2_with_yaml.png
 
+
+.. _`definable_serializer_by_json_field_class`:
 
 DefinableSerializerByJSONField
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -69,37 +73,6 @@ jsonfield `(https://github.com/dmkoch/django-jsonfield) <https://github.com/dmko
 ユーザーからの入力データを保存するモデルフィールド
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. (あとで利用する)
-.. :ref:`storing-input-data` でも取り上げたように、モデルに結びつかないシリアライザーにユーザーから
-.. 渡されてバリデーションが完了したデータを永続的に保存するには、保存情報を扱うモデルの単一のフィールドに
-.. シリアライズ(直列化)された状態でデータを保存します。
-..
-.. ようはPythonのネイティブなデータを何らかの形に変換してつまりデータベースのカラムにさえ保存できれば
-.. どんな形でも構いません。データのシリアライズによく用いられるのが JSON, YAML, Pickle, Base64です。
-..
-.. 各種それぞれモデルフィールドとしてサードパーティパッケージとしてモデルフィールドが提供されています。
-..
-.. * django-base64field `(https://pypi.python.org/pypi/django-base64field) <https://pypi.python.org/pypi/django-base64field>`_
-.. * django-yamlfield `(https://github.com/datadesk/django-yamlfield) <https://github.com/datadesk/django-yamlfield>`_
-.. * django-picklefield `(https://github.com/shrubberysoft/django-picklefield) <https://github.com/shrubberysoft/django-picklefield>`_
-..
-.. その中でももっとも人気のある方法がJSONによるシリアライズです。
-..
-.. JSONFieldを提供するパッケージを紹介します。
-..
-.. * jsonfield `(https://github.com/dmkoch/django-jsonfield) <https://github.com/dmkoch/django-jsonfield>`_
-.. * django-mysql `(http://django-mysql.readthedocs.io/en/latest/model_fields/json_field.html) <http://django-mysql.readthedocs.io/en/latest/model_fields/json_field.html>`_
-..
-.. そしてdjangoは標準で ``django.contrib.postgres.fields.JSONField`` を提供しており、これを利用すれば
-.. `保存したJSONFieldを検索の対象として利用することができます。 <https://docs.djangoproject.com/en/1.11/ref/contrib/postgres/fields/#querying-jsonfield>`_
-.. それは `django-mysqlのJSONField <http://django-mysql.readthedocs.io/en/latest/model_fields/json_field.html#querying-jsonfield>`_ でも同様です。
-..
-.. しかし、JSONField、YAMLFieldともにいくつかの問題があります。
-..
-.. ここではそれぞれのフィールドが抱える問題点と、definable_serializerが提供するこれらのフィールドをラップした
-.. 問題を修正するためのモデルフィールドを紹介します。
-
-
 :ref:`storing-input-data` でも取り上げたように、モデルに結びつかないシリアライザーにユーザーから
 渡されてバリデーションが完了したデータを永続的に保存するには、保存情報を扱うモデルの単一のフィールドに
 シリアライズ(直列化)された状態でデータを保存します。
@@ -109,6 +82,8 @@ jsonfield `(https://github.com/dmkoch/django-jsonfield) <https://github.com/dmko
 
 definable-serializerではユーザーからの入力を保存するために2つのモデルフィールドを用意しています。
 
+
+.. _`compat_json_field`:
 
 JSONField
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -145,7 +120,7 @@ definable-serializerでは、 `jsonfield <https://github.com/dmkoch/django-jsonf
 
 .. figure:: imgs/compat_json_field.png
 
-    Emoji(🍔)も正しく表示されます
+    非ASCII文字列が正しく表示されます
 
 
 YAMLField
@@ -176,4 +151,4 @@ definable-serializerでは、 django-yamlfield `(https://github.com/datadesk/dja
 .. figure:: imgs/compat_yaml_field.png
     :scale: 40
 
-    絵文字も正しく表示されます
+    非ASCII文字列が正しく表示されます

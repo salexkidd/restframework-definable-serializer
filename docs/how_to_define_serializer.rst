@@ -220,7 +220,7 @@ restframeworkが提供するシリアライザーフィールドの利用
     definable-serializerでは ``DictField``, ``ListField`` 及び ``SerializerMethodField``
     以外のシリアライザーフィールドが利用可能です。(これらのフィールドは将来的にサポートされる予定です)
 
-definabble-serializerではrestframeworkが提供するほとんどのシリアライザーフィールドを利用することができます。
+definable-serializerではrestframeworkが提供するほとんどのシリアライザーフィールドを利用することができます。
 シリアライザーフィールドの一覧については
 `restframeworkのシリアライザーのページを参照してください <http://www.django-rest-framework.org/api-guide/fields/#serializer-fields>`_
 
