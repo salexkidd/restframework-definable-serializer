@@ -43,7 +43,7 @@ INSTALLED_APPS = [
 
 # Documentation
 
-For extensive Japanese documentation see the docs read it on [Readthedocs](https://readthedocs.org/projects/restframework-definable-serializer/)
+For extensive Japanese documentation see the docs read it on [Readthedocs](http://restframework-definable-serializer.readthedocs.io/ja/latest/)
 
 
 # Sample code
