@@ -30,6 +30,7 @@ restframework-definable-serializerを利用することで、少しでもdjango�
    extend_model_class
    extend_modeladmin_class
    extra_serializer_fields
+   utility_functions
    misc
 
 

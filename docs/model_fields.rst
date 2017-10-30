@@ -26,12 +26,17 @@ admin画面でテキストデータの編集を行うのは難しい話ではな
 DefinableSerializerByYAMLField
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-DefinableSerializerByYAMLFieldはdjango-yamlfield
-`(https://github.com/datadesk/django-yamlfield) <https://github.com/datadesk/django-yamlfield>`_ が
-提供するYAMLFieldをラップし、CodeMirror2ウィジェット及び非ASCII文字が正しく表示することができます。
+.. class:: DefinableSerializerByYAMLField(*args, allow_validate_method=True, **kwargs)
 
-以下に使用例を示します。
+DefinableSerializerByYAMLFieldは `https://github.com/datadesk/django-yamlfield <https://github.com/datadesk/django-yamlfield>`_ が
+提供するYAMLFieldをラップし、CodeMirror2ウィジェットの利用及び非ASCII文字が正しく表示できるようにカスタマイズしています。
 
+
+``allow_validate_method`` が ``False`` の場合、シリアライザーの定義中に ``validate_method`` が記述されていると ``ValidationError`` が発生します。
+
+その他のオプションについては `https://github.com/datadesk/django-yamlfield <https://github.com/datadesk/django-yamlfield>`_ を参照してください。
+
+以下に記述例を示します。
 
 .. code-block:: python
 
@@ -48,12 +53,16 @@ DefinableSerializerByYAMLFieldはdjango-yamlfield
 DefinableSerializerByJSONField
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-DefinableSerializerByJSONFieldは
-jsonfield `(https://github.com/dmkoch/django-jsonfield) <https://github.com/dmkoch/django-jsonfield>`_ が
-提供するJSONFieldをラップし、CodeMirror2ウィジェット及び非ASCII文字が正しく表示することができます。
+.. class:: DefinableSerializerByJSONField(*args, allow_validate_method=True, **kwargs)
 
-以下に使用例を示します。
+DefinableSerializerByJSONFieldは `https://github.com/dmkoch/django-jsonfield <https://github.com/dmkoch/django-jsonfield>`_ が
+提供するJSONFieldをラップし、CodeMirror2ウィジェットの利用及び非ASCII文字が正しく表示できるようにカスタマイズしています。
 
+``allow_validate_method`` が ``False`` の場合、シリアライザーの定義中に ``validate_method`` が記述されていると ``ValidationError`` が発生します。
+
+その他のオプションについては  `https://github.com/dmkoch/django-jsonfield <https://github.com/dmkoch/django-jsonfield>`_ を参照してください。
+
+以下に記述例を示します。
 
 .. code-block:: python
 
@@ -87,6 +96,8 @@ definable-serializerではユーザーからの入力を保存するために2�
 
 JSONField
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+.. class:: JSONField(*args, **kwargs)
 
 JSONは非常に人気の高いシリアライズの形式です。
 
@@ -125,6 +136,8 @@ definable-serializerでは、 `jsonfield <https://github.com/dmkoch/django-jsonf
 
 YAMLField
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+.. class:: YAMLField(*args, **kwargs)
 
 YAMLはJSONと同様、テキストでデータシリアライズします。記号が少なくインデントでデータ構造を表すため、
 Pythonのコードのように美しく、可読性に優れます。

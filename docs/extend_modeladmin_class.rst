@@ -14,6 +14,8 @@ JSONやYAMLで定義したシリアライザーは、実際にシリアライザ
 DefinableSerializerAdmin
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+.. class:: DefinableSerializerAdmin
+
 DefinableSerializerAdminクラスでは以下の機能を提供します。
 
 * 編集画面上部に定義されたシリアライザーのクラス情報を表示する機能

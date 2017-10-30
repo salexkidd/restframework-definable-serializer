@@ -15,9 +15,14 @@ Zen Of Pythonの *暗示するより明示するほうがいい* という観点
 CheckRequiredField
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
+.. class:: CheckRequiredField(*args, **kwargs)
+
 必ずOnをしなければならないチェックボックスを提供します。ユーザーの意思や確認を行いたい場合に利用します。
 
-fieldには ``definable_serializer.extra_fields.CheckRequiredField`` を指定します。
+このクラスは restframeworkの ``BooleanField`` を継承してつくられています。
+オプションについては `BooleanField <http://www.django-rest-framework.org/api-guide/fields/#booleanfield>`_ を参照してください。
+
+シリアライザー定義のfieldには ``definable_serializer.extra_fields.CheckRequiredField`` を指定することで利用可能です。
 
 .. code-block:: yaml
 
@@ -31,14 +36,17 @@ fieldには ``definable_serializer.extra_fields.CheckRequiredField`` を指定�
 MultipleCheckboxField
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
+.. class:: MultipleCheckboxField(choices, *args, required=False, inline=False, **kwargs)
+
 複数のチェックボックスによる選択肢を表示するフィールドを提供します。
 
 fieldには ``definable_serializer.extra_fields.MultipleCheckboxField`` を指定します。
 
-``required`` を ``true`` にすると必須入力になります。
+- ``required`` を ``true`` にすると必須選択になります。
+- ``inline`` を ``true`` にするとチェックボックスが横並びに表示されます。
 
-``inline`` を ``true`` にするとチェックボックスが横並びに表示されます。
-
+このクラスはrestframeworkの ``MultipleChoiceField`` を継承してつくられています。その他のオプションについては
+`MultipleChoiceField <http://www.django-rest-framework.org/api-guide/fields/#multiplechoicefield>`_ を参照してください。
 
 .. code-block:: yaml
 
@@ -68,13 +76,17 @@ fieldには ``definable_serializer.extra_fields.MultipleCheckboxField`` を指�
 ChoiceWithBlankField
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
+.. class:: MultipleCheckboxField(choices, *args, blank_label=None, **kwargs)
+
 渡されたchoicesの選択にブランクチョイスを自動的に追加します。ブランクチョイスが選択された状態でバリデーションが
 行われるとエラーになります。
 
 fieldには ``definable_serializer.extra_fields.ChoiceWithBlankField`` を指定します。
 
-``blank_label`` に文字列を渡すとダッシュの連続の代わりにその文字列がブランクチョイスの部分に表示されます。
+- ``blank_label`` に文字列を渡すとダッシュの連続の代わりにその文字列がブランクチョイスの部分に表示されます。
 
+このクラスは restframeworkの ``ChoiceField`` を継承してつくられています。その他のオプションについては
+`ChoiceField <http://www.django-rest-framework.org/api-guide/fields/#choicefield>`_ を参照してください。
 
 .. code-block:: yaml
 
@@ -97,17 +109,23 @@ fieldには ``definable_serializer.extra_fields.ChoiceWithBlankField`` を指定
 
 .. figure:: imgs/choice_with_blank_field.png
 
-    blank_labelに文字を渡した例。blank_labelがからの場合は "---------" となります。
+    blank_labelに文字を渡した例。blank_labelが空の場合は "---------" となります。
 
 
 RadioField
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
+.. class:: RadioField(choices, *args, inline=False, **kwargs)
+
+
 ラジオボタンによる選択肢を表示するフィールドを提供します。
 
 fieldには ``definable_serializer.extra_fields.RadioField`` を指定します。
 
-``inline`` を ``true`` にするとチェックボックスが横並びに表示されます。
+- ``inline`` を ``true`` にするとチェックボックスが横並びに表示されます。
+
+このクラスは restframeworkの ``ChoiceField`` を継承してつくられています。その他のオプションについては
+`ChoiceField <http://www.django-rest-framework.org/api-guide/fields/#choicefield>`_ を参照してください。
 
 .. code-block:: yaml
 
@@ -139,9 +157,11 @@ TextField
 
 fieldには ``definable_serializer.extra_fields.TextField`` を指定します。
 
-``rows`` に数値を渡すことででテキストエリアの行数を指定することができます。
+- ``rows`` に数値を渡すことででテキストエリアの行数を指定することができます。
+- ``placeholder`` に文字列を渡すとプレースホルダー文字列を表示することができます。
 
-``placeholder`` に文字列を渡すとプレースホルダー文字列を表示することができます。
+このクラスは restframeworkの ``CharField`` を継承してつくられています。その他のオプションについては
+`CharField <http://www.django-rest-framework.org/api-guide/fields/#charfield>`_ を参照してください。
 
 
 .. figure:: imgs/text_field.png

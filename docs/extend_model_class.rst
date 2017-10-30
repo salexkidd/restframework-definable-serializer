@@ -18,6 +18,8 @@ definable-serializerでは、 :ref:`definable-serializer-fields` で紹介した
 AbstractDefinitiveSerializerModel
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+.. class:: AbstractDefinitiveSerializerModel(*args, **kwargs)
+
 このモデルクラスは ``django.db.models.Model`` を親クラスとしており、
 ``__init__`` メソッドの中で :ref:`definable_serializer_by_yaml_field_class` および
 :ref:`definable_serializer_by_json_field_class` を利用しているフィールドを自動で探し、

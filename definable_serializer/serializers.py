@@ -30,6 +30,10 @@ NOT_AVAILABLE_FIELDS = (
 
 __all__ = (
     "build_serializer",
+    "build_serializer_by_json",
+    "build_serializer_by_json_file",
+    "build_serializer_by_yaml",
+    "build_serializer_by_yaml_file",
 )
 
 
@@ -268,10 +272,7 @@ def build_serializer(defn_data, allow_validate_method=True):
 
 
 def build_serializer_by_json(json_data, allow_validate_method=True):
-    return build_serializer(
-        simplejson.loads(json_data),
-        allow_validate_method
-    )
+    return build_serializer(simplejson.loads(json_data), allow_validate_method)
 
 
 def build_serializer_by_json_file(json_file_path, allow_validate_method=True):
@@ -284,16 +285,10 @@ def build_serializer_by_json_file(json_file_path, allow_validate_method=True):
 
 
 def build_serializer_by_yaml(yaml_data, allow_validate_method=True):
-    return build_serializer(
-        yaml.load(yaml_data),
-        allow_validate_method
-    )
+    return build_serializer(yaml.load(yaml_data), allow_validate_method)
 
 
 def build_serializer_by_yaml_file(yaml_file_path, allow_validate_method=True):
     with open(yaml_file_path, "rb") as fh:
         reader = codecs.getreader("utf-8")
-        return build_serializer(
-            yaml.load(reader(fh)),
-            allow_validate_method
-        )
+        return build_serializer(yaml.load(reader(fh)), allow_validate_method)

@@ -47,11 +47,11 @@ class MultipleCheckboxField(rf_fields.MultipleChoiceField):
         'this_field_is_required': 'This field is required.'
     }
 
-    def __init__(self, *args, **kwargs):
-        self.requred = kwargs.pop("required", False)
+    def __init__(self, *args, required=False, inline=False, **kwargs):
+        self.requred = required
         kwargs["style"] = {
             'base_template': 'checkbox_multiple.html',
-            'inline': kwargs.pop('inline', False)
+            'inline': inline,
         }
 
         super().__init__(*args, **kwargs)
@@ -75,9 +75,10 @@ class ChoiceWithBlankField(rf_fields.ChoiceField):
         'this_field_is_required': 'This field is required.'
     }
 
-    def __init__(self, choices, *args, **kwargs):
+    def __init__(self, choices, *args, blank_label=None, **kwargs):
         blank_choices = copy(BLANK_CHOICE_DASH)
-        blank_label = kwargs.pop("blank_label", blank_choices[0][1])
+
+        blank_label = blank_label or blank_choices[0][1]
         if blank_label:
             blank_choices = [["", blank_label],]
 
@@ -99,10 +100,10 @@ class RadioField(rf_fields.ChoiceField):
 
     definable_serializer.extra_fields.RadioField
     """
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, inline=False, **kwargs):
         kwargs["style"] = {
             'base_template': 'radio.html',
-            'inline': kwargs.pop('inline', False)
+            'inline': inline,
         }
         super().__init__(*args, **kwargs)
 
@@ -113,11 +114,11 @@ class TextField(rf_fields.CharField):
 
     definable_serializer.extra_fields.TextField
     """
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, rows=5, placeholder="", **kwargs):
         kwargs["style"] = {
             'base_template': 'textarea.html',
-            'rows': kwargs.pop('rows', 5),
-            'placeholder': kwargs.pop('placeholder', "")
+            'rows': rows,
+            'placeholder': placeholder,
         }
 
         super().__init__(*args, **kwargs)
