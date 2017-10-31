@@ -2,19 +2,17 @@
 
 
 ==============================================================================
-アプリケーションにdefinable-serializerを組み込む
+プロジェクトにdefinable-serializerを組み込む
 ==============================================================================
 
-definable-serializerの一番の目的は、数多ある入力項目の仕様変更からエンジニアを守ることです。
+definable-serializerの一番の目的は、シリアライザーの入力項目の変更からを容易にし、デプロイ作業からエンジニアを守ることです。
 故にシリアライザーの定義をファイルに書いては意味がありません。
 
-その問題を解決する一番の方法はWebインターフェイスです。
-我々はrestframeworkを利用している時点でdjangoを利用しています。
-そしてdjangoには初めからadmin画面が用意されています。
+その問題を解決する一番の方法はWebインターフェイスです。ウェブインターフェイスからシリアライザーの定義を変更することができれば、デプロイを行わずにシリアライザーの入力項目を変更することができます。
+我々はrestframeworkを利用している時点でdjangoを利用しています。そしてdjangoには初めからadminサイトが用意されています。
 
-djangoはadmin画面にてモデルの追加/変更/削除を簡単に行うことができます。
-それを利用してモデルにシリアライザーの定義を保存するためのフィールドを追加し、
-admin画面を用意すれば簡単にシリアライザーの定義を変更することができます。
+djangoはadminサイトにてモデルの追加/変更/削除を簡単に行うことができます。
+それを利用してモデルにシリアライザーの定義を保存するためのフィールドを追加すれば簡単にシリアライザーの定義を変更することができます。
 
 これでデプロイをすることなくシリアライザーを簡単に変更することができます。
 definable-serializerではシリアライザー定義を扱うためのフィールドを用意しています。
@@ -26,13 +24,14 @@ definable-serializerではシリアライザー定義を扱うためのフィー
 シリアライザーを定義するためのモデルフィールド
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-definable-serializerではモデルにYAML/JSONでシリアライザー定義を扱うための ``DefinableSerializerByYAMLField`` と ``DefinableSerializerByJSONField``
-という2つのモデルフィールドを用意しています。
+definable-serializerではモデルにてYAML/JSONでシリアライザー定義を扱うための
 
-これらのフィールドを利用すると、admin画面中にCodeMirror2のウィジェットでラップされたテキストエリアが現れます。
+:ref:`definable_serializer_by_yaml_field_class` と :ref:`definable_serializer_by_json_field_class` という2つのモデルフィールドを用意しています。
 
-さらにadmin画面中で記述されたシリアライザーの定義を確認するための機能を提供する ``DefinableSerializerAdmin``
-クラスを提供しています。ここでは簡単なプロジェクトを作成し、組込例を紹介します。
+これらのフィールドを利用すると、adminサイト中にCodeMirror2を使ったテキストエリアが現れます。
+
+さらにadminサイト中で記述されたシリアライザーの定義を確認するための機能を提供する :ref:`definable_serializer_admin_class` クラスを提供しています。
+ここでは簡単なプロジェクトを作成し、組込例を紹介します。
 
 
 ------------------------------------------------------------------------------
@@ -40,30 +39,29 @@ definable-serializerではモデルにYAML/JSONでシリアライザー定義を
 
 アンケートシステムを作成してadmin画面でシリアライザーを定義する
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-簡単なアンケート(Survey)を取るためのアプリケーションがあるとします。
+簡単なアンケート(Survey)を取るためのシステムがあるとします。
 
 しかしこのアンケートシステムの営業担当は顧客に対して寛容な心を持ち、顧客の要望全てに答えようとしてしまいます。
-担当のエンジニアは変更のあるたびにモデルフィールドの追加/削除を求められ、
-挙句の果てにラベルやヘルプテキストの変更など、ありとあらゆる要望に答えなくてはなりません。
+担当のエンジニアは変更のたびにモデルフィールドの追加/削除を求められ、挙句の果てにラベルやヘルプテキストの変更などありとあらゆる要望に答えならなくなったとします。
 
 そんなときこそdefinable-serializerが真価を発揮します。
 
-ここではアンケートをとるためのプロジェクトとsurveysアプリケーションを作成し、definable-serializeの組み込み方を説明します。
+ここではアンケートをとるためのプロジェクトを作成し、definable-serializeの組み込み方を説明します。
 
 .. warning::
 
     ここではある程度djangoとrestframeworkの扱いを知っている方を対象とします。
-    また、インストール方法を読んでいない方は先に読んで準備を整えてください。
+    また、:ref:`install` を読んでいない方は先に読んで準備を整えてください。
 
-    このサンプルアプリケーションは完全に動作するものではありません。実際に動作するものを確認したい場合は、
-    `完全に動作するExampleプロジェクトを用意しています。 <https://github.com/salexkidd/restframework-definable-serializer-example>`_
-    そちらを参照してください。
+    この説明中で記載するコードは完全に動作するものではありません。実際に動作するものを確認したい場合は、
+    `完全に動作するサンプルプロジェクトを用意しています。 <https://github.com/salexkidd/restframework-definable-serializer-example>`_
+    ので、そちらを参照してください。
 
 
-exampleプロジェクトとsurveysアプリケーションの作成と準備
+exampleプロジェクトとsurveysアプリケーションの作成
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-以下のコマンドを実行してexampleプロジェクトとsurveysアプリケーションを作成します。
+適当なディレクトリ上で以下のコマンドを実行し、exampleプロジェクトとsurveysアプリケーションを作成します。
 
 .. code-block:: shell
 
@@ -85,14 +83,14 @@ exampleプロジェクトとsurveysアプリケーションの作成と準備
     )
 
 
-models.pyとadmin.pyの変更
+surveysのmodels.pyとadmin.pyの変更
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-今回作成するのはアンケートシステムなので、アンケートの質問を扱う ``Survey`` モデルと、回答データを
+今回作成するのはアンケートシステムなので、アンケートの質問を取り扱う ``Survey`` モデルと、回答データを
 扱うための ``Answer`` モデルを用意します。
 
 Surveyモデル
-    Surveyモデルには先ほど紹介した ``DefinableSerializerByYAMLField`` を利用して質問用のシリアライザー定義を取り扱う ``question`` フィールドと、
+    Surveyモデルには先ほど紹介した :ref:`definable_serializer_by_yaml_field_class` を利用して質問用のシリアライザー定義を取り扱う ``question`` フィールドと、
     アンケートタイトルを扱う ``title`` フィールドを追加します。
 
 Answerモデル
@@ -100,13 +98,12 @@ Answerモデル
     回答データを保持する ``answer`` フィールドを追加します。
 
 
-models.pyを作成する
+models.pyを変更する
 ******************************************************************************
 
 *surveys/models.py* を変更します。
 
-Surveyモデルは、``models.Model`` ではなく ``AbstractDefinitiveSerializerModel``
-を継承している点に注意してください。
+Surveyモデルは、``models.Model`` ではなく :ref:`abstract_definitive_serializer_model_class` を継承している点に注意してください。
 
 .. code-block:: python
 
@@ -154,12 +151,11 @@ Surveyモデルは、``models.Model`` ではなく ``AbstractDefinitiveSerialize
             unique_together = ("survey", "respondent",)
 
 
-admin.pyを作成する
+admin.pyを変更する
 ******************************************************************************
 
 admin画面にsurveyモデルを変更する画面を表示するため、 *surveys/admin.py* を変更します。
-AnswerAdminクラスは、admin.ModelAdminではなく、 ``DefinableSerializerAdmin``
-を継承している点に注意してください
+AnswerAdminクラスは、admin.ModelAdminではなく、 :ref:`definable_serializer_admin_class` を継承している点に注意してください
 
 
 .. code-block:: python
@@ -181,13 +177,15 @@ AnswerAdminクラスは、admin.ModelAdminではなく、 ``DefinableSerializerA
         list_display_links = ("id", "survey",)
 
 
-作業が完了するとadmin画面からSurveyモデルとAnsweモデルの変更を行うことができるようになります。
+作業が完了するとadminサイトにSurveyモデルとAnsweモデルの変更を行うページが追加されます。
 
 
 質問用のシリアライザー定義を記述する
 ******************************************************************************
 
-admin画面を確認するために開発用サーバーを起動します。初回の起動となるためマイグレーション作業及びadminアカウントを作成します。
+adminサイトを確認するために開発用サーバーを起動します。初回起動のため、マイグレーション作業及びadminアカウントを作成し、
+開発用サーバーを起動します。
+
 
 .. code-block:: shell
 
@@ -214,8 +212,8 @@ admin画面を確認するために開発用サーバーを起動します。初
 `http://localhost:8000/admin/surveys/survey/add/survey <http://localhost:8000/admin/surveys/survey/add/>`_
 をブラウザーで開いてSurveyモデルのadmin画面にアクセスしましょう。
 
-タイトルとYAMLで書かれたシリアライザー定義を入力します。ここでは名前、年齢、性別の3つを扱う簡単なシリアライザーを利用しましょう。
-以下のYAMLデータをQuestionにコピー＆ペーストしてください。(タイトルは適当で構いません)
+タイトルとYAMLで記述されたシリアライザー定義を入力します。ここでは名前、年齢、性別の3つを扱う簡単なシリアライザーを定義します。
+以下のYAMLデータをquestionのフィールドにコピー＆ペーストしてください。(タイトルは適当で構いません)
 
 .. code-block:: yaml
 
@@ -242,7 +240,7 @@ admin画面を確認するために開発用サーバーを起動します。初
           required: true
 
 
-入力が完了したら、保存して[編集を続けるボタン]ボタンを押します。すると、編集画面の上部に定義されたシリアライザーの状態が表示されます。
+入力が完了したら、保存して[編集を続ける]ボタンを押します。すると、編集画面の上部に定義したシリアライザーのクラス情報が表示されます。
 
 .. figure:: imgs/survey_admin_editing.png
 
@@ -250,8 +248,8 @@ admin画面を確認するために開発用サーバーを起動します。初
 
 また、定義されたシリアライザーをrestframeworkのもつBrowsable APIのページを使って確認をすることもできます。
 
-タイトルラインにある (Show Restframework Browsable Page) のリンクをクリックすると、
-Browsable API画面が開き、YAMLで定義されたシリアライザーの入力テストを行うことができます。
+タイトルラインにある [Show Restframework Browsable Page] のリンクをクリックすると、
+Browsable APIのページが開き、定義したシリアライザーの入力テストを行うことができます。
 
 .. figure:: imgs/serializer_with_browsable_api.png
 
@@ -259,7 +257,7 @@ Browsable API画面が開き、YAMLで定義されたシリアライザーの入
 
 
 定義が確認できたところで、次はシリアライザーの定義を変更してみましょう。
-ここでは紹介文用のテキストエリアを提供するフィールド、 ``introduction`` を追加します。
+例として紹介文用のフィールド、 ``introduction`` を追加します。
 
 .. code-block:: yaml
 
@@ -276,7 +274,7 @@ Browsable API画面が開き、YAMLで定義されたシリアライザーの入
           placeholder: Hello!
 
 
-追加が完了したら再度 Browsable APIでシリアライザーの状態を確認してみましょう。
+追加が完了したらモデルを保存して、再度 Browsable APIのページでシリアライザーの状態を確認してみましょう。
 問題がなければ、テキストエリアが追加されます。
 
 .. figure:: imgs/add_textarea_to_serializer_with_browsable_api.png
@@ -289,14 +287,16 @@ Browsable API画面が開き、YAMLで定義されたシリアライザーの入
 ------------------------------------------------------------------------------
 
 
-ユーザーからの回答を受け付けるビュー
+ユーザーからの回答を受け付けるビューの作成
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 restframeworkを利用する場合、REST API経由でやり取りをするケースが多いと思いますが、
 ここではrestframeworkが持つ ``TemplateHTMLRenderer`` も同時にサポートしてユーザーの回答画面を作成します。
 
-このビューにおいて重要になるのは、モデルオブジェクト中のシリアライザー定義からシリアライザークラスを取り出すことと、
-POSTされた回答内容をどのように保存するかという2点です。以下に2点の解決方法を示します。
+このビューにおいて問題になるのが、Surveyモデルオブジェクト中のシリアライザー定義からシリアライザークラスを取り出す方法と、
+POSTされた回答内容をどのように保存するかという点です。
+
+definable-serializerではこれらの問題を解決するための方法を提供しています。
 
 
 .. _`extract_serializer_by_model_field`:
@@ -304,20 +304,20 @@ POSTされた回答内容をどのように保存するかという2点です。
 モデルからシリアライザークラスを取り出す方法
 ******************************************************************************
 
-シリアライザー定義用フィールドを持つモデルオブジェクトからシリアライザーをクラスを取得するのはさほど難しくありません。
+シリアライザー定義用フィールドを持つモデルオブジェクトからシリアライザークラスを取り出すのはさほど難しくありません。
 
-先ほど定義したSurveyモデルクラスは　``AbstractDefinitiveSerializerModel`` を継承しており、
-そこにシリアライザークラスを取り出すためのメソッドが自動的に追加される方法が組み込まれているからです。
+先ほど定義したSurveyモデルは　:ref:`abstract_definitive_serializer_model_class` を継承しており、
+シリアライザークラスを取り出すためのメソッドである ``get_question_serializer_class`` がモデルオブジェクトに自動で追加されるからです。
 
-例として先ほど作成したSurveyモデルオブジェクトから ``question`` フィールドに記述されたシリアライザー定義から、
-シリアライザークラスを取得します。
+例として先ほど作成したSurveyモデルオブジェクトから ``question`` フィールドに記述したシリアライザー定義の
+シリアライザークラスを取り出します。
 
 .. code-block:: python
 
     >>> from surveys import models as surveys_models
     >>> survey_obj = surveys_models.Survey.objects.get(pk=1)
-    >>> question_serializer_kls = survey_obj.get_question_serializer_class()
-    >>> question_serializer = question_serializer_kls()
+    >>> question_serializer_class = survey_obj.get_question_serializer_class()
+    >>> question_serializer = question_serializer_class()
     >>> print(question_serializer)
     EnqueteSerializer():
         name = CharField(max_length=100, required=True)
@@ -327,9 +327,10 @@ POSTされた回答内容をどのように保存するかという2点です。
 
 .. hint::
 
-    例えば ``foobar`` というモデルフィールドが上記のフィールドのうちどちらかを利用していたら、
+    例えば ``foobar`` というモデルフィールドが
+    :ref:`definable_serializer_by_yaml_field_class` または :ref:`definable_serializer_by_json_field_class` のどちらかを利用していたら、
     ``get_foobar_serializer_class`` というメソッド名でシリアライザークラスを取り出すことができます。
-    (ただし、モデルクラスが ``AbstractDefinitiveSerializerModel`` を継承している場合のみに限ります)
+    (ただし、モデルが :ref:`abstract_definitive_serializer_model_class` を継承している場合のみに限ります)
 
 
 .. _`storing-input-data`:
@@ -337,10 +338,13 @@ POSTされた回答内容をどのように保存するかという2点です。
 入力された内容を保存する方法
 ******************************************************************************
 
-definable-serializerでは、モデルのフィールドとシリアライザーのフィールドを対にしないという理念のもと作られています。
-そのため、入力内容をモデルの単一のフィールドに保存する必要があります。
+definable-serializerでは、シリアライザーのフィールドと、モデルのフィールドを対にしないという理念のもと作られています。
+そのため、シリアライザーに渡されたユーザーからの入力内容は、モデルの単一のフィールドにJSON/YAML/Pickle等にシリアライズ(直列化)して保存する必要があります。
 
-以下にsurveys/models.pyに定めたAnswerクラスにアンケートの内容を保存するためのコード例を示します。
+definable-serializerでは、ユーザーからの入力を保存するために :ref:`compat_json_field` と :ref:`compat_yaml_field` を用意しています。
+先ほど作成したmodels.py中のAnswerモデルのanswerフィールドは :ref:`compat_yaml_field` を利用しています。
+
+以下にAnswerモデルに追加したanswerフィールドにアンケートの内容を保存するためのコード例を示します。
 
 
 .. code-block:: python
@@ -348,8 +352,8 @@ definable-serializerでは、モデルのフィールドとシリアライザー
     # シリアライザークラスを作成してデータを渡し、バリデーションを行う
     >>> from surveys import models as surveys_models
     >>> survey_obj = surveys_models.Survey.objects.get(pk=1)
-    >>> question_serializer_kls = survey_obj.get_question_serializer_class()
-    >>> question_serializer = question_serializer_kls(data={
+    >>> question_serializer_class = survey_obj.get_question_serializer_class()
+    >>> question_serializer = question_serializer_class(data={
     ...     "name": "John Smith",
     ...     "age": 20,
     ...     "gender": "male",
@@ -371,33 +375,33 @@ definable-serializerでは、モデルのフィールドとシリアライザー
     odict_values(['John Smith', 20, 'male', 'Hi!'])
 
 
-実際に入れたデータをadmin画面で確認してみましょう。YAML形式で保存されていることが確認できます。
+実際に入れたデータをadminサイトで確認してみましょう。YAML形式で保存されていることが確認できます。
 
 .. figure:: imgs/data_store_by_yaml.png
 
     `!!Ordered Mapping <http://yaml.org/type/omap.html>`_ で保存されていることが確認できます。
 
 .. hint::
-    例としてYAMLFieldを用いてバリデーション後の結果を保存しましたが、
-    モデルフィールドさえ提供されていれば、JSONやPickle等で保存することが出来ます。
+    例としてYAMLFieldを用いてバリデーション後の結果を保存しましたが、モデルフィールドさえ提供されていれば、色々な形式で保存することが出来ます。
     詳しくは :ref:`methods-of-storing-input-data` を参照してください
 
 
-.. danger::
+.. warning::
 
-    特にPostgreslを利用しており、保存されているJSONデータを検索の対象としたい場合はdjangoの提供する
-    ``postgres.fields.JSONField`` を利用することをおすすめします。
+    保存したJSONデータを検索の対象としたい場合はdjangoの提供する
+    ``django.contrib.postgres.fields.JSONField`` を利用することを強くおすすめします。
     ただし、そのままではいくつかの問題があります。詳しくは :ref:`json-field-problem` を御覧ください。
 
-回答用ビューの作成例
+
+ユーザー回答用ビューの作成例
 ******************************************************************************
 
 上の内容を踏まえて回答用のビューを作成例を示します。
 
 
 .. warning::
-    下記のViewのコードは作成例です。
-    urls.pyへの登録、テンプレートの用意、登録後のリダイレクト先が存在しないため、そのままでは正しく動作しません。
+    下記に示すコードは作成例です。
+    urls.pyへの登録、テンプレートの用意、登録後のリダイレクト先が存在しない等の問題により、このままでは正しく動作しません。
     ここではそれらが完全に揃っていることにして説明を続けます。
 
     実際に動作するものを確認したい場合は
@@ -535,14 +539,14 @@ definable-serializerでは、モデルのフィールドとシリアライザー
 ------------------------------------------------------------------------------
 
 
-回答用ビューのへのアクセス例
+回答用ビューのアクセス例
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 
 ブラウザーでレスポンスを得た場合
 ******************************************************************************
 
-上記のビューにブラウザーからアクセスすると以下のような画面を返します。
+上記のビューにブラウザーからアクセスするとHTMLTemplateRendererにより、以下のようなレスポンスを返します。
 
 
 .. figure:: imgs/survey_answer_view_with_browser.png
@@ -554,7 +558,7 @@ Postmanを用いてREST API経由のレスポンスを得た場合
 ******************************************************************************
 
 `Chromeの機能拡張であるPostman <https://chrome.google.com/webstore/detail/postman/fhbjgbiflinjbdggehcddcbncdddomop?hl=ja>`_
-を用いてREST API経由で回答を行った場合の画面を示します。
+を用いてREST API経由で回答を行った場合の例を示します。
 
 
 .. figure:: imgs/survey_answer_view_with_postman.png
@@ -562,16 +566,15 @@ Postmanを用いてREST API経由のレスポンスを得た場合
 
 .. warning::
 
-    REST API経由でアクセスを行う場合、Headersタブにて ``Accept``, ``Authorization``, ``Content-Type`` の3つを適切に指定する必要があります。
+    REST API経由でアクセスを行う場合は、Headersタブにて ``Accept``, ``Authorization``, ``Content-Type`` の3つを適切に指定してください。
 
     .. figure:: imgs/postman_with_headers.png
 
 
-PostmanでOPTIONSメソッドでレスポンスを得た場合
+Postmanを用いてOPTIONSメソッドでレスポンスを得た場合
 ******************************************************************************
 
 ``OPTIONS`` メソッドでアクセスするとREST APIの詳細情報及びPOST時のJSONスキーマが表示されます。
-（ただし ``Accept``, ``Authorization``, ``Content-Type`` の3つを適切に指定する必要があります。）
 
 以下にレスポンス例を示します。
 

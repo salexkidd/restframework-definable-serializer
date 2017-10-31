@@ -17,12 +17,12 @@ CheckRequiredField
 
 .. class:: CheckRequiredField(*args, **kwargs)
 
-必ずOnをしなければならないチェックボックスを提供します。ユーザーの意思や確認を行いたい場合に利用します。
+必ずOnをしなければならないチェックボックスを提供します。ユーザーの意思確認などを行いたい場合に利用します。
 
 このクラスは restframeworkの ``BooleanField`` を継承してつくられています。
 オプションについては `BooleanField <http://www.django-rest-framework.org/api-guide/fields/#booleanfield>`_ を参照してください。
 
-シリアライザー定義のfieldには ``definable_serializer.extra_fields.CheckRequiredField`` を指定することで利用可能です。
+シリアライザー定義のfieldには ``definable_serializer.extra_fields.CheckRequiredField`` を指定します。
 
 .. code-block:: yaml
 

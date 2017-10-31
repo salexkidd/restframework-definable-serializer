@@ -5,11 +5,11 @@
 ==============================================================================
 
 JSONやYAMLで定義したシリアライザーは、実際にシリアライザークラスにしないと確認することができません。
-:ref:`yaml-to-serializer` で説明した方法使ってdjango shellを使って確認することもできますが、
-これでは入力のや見栄えのテストを行うのには不十分です。そのため、definable-serializerでは
-``django.contrib.admin.ModelAdmin`` を拡張した
-``definable_serializer.admin.DefinableSerializerAdmin`` クラスを提供しています。
+:ref:`yaml-to-serializer` で説明した方法使ってdjango shellを使って確認することもできますが、これでは入力や見栄えのテストを行うのには不十分です。
+そのため、definable-serializerでは ``django.contrib.admin.ModelAdmin`` を拡張した ``DefinableSerializerAdmin`` クラスを提供しています。
 
+
+.. _`definable_serializer_admin_class`:
 
 DefinableSerializerAdmin
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

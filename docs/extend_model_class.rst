@@ -9,11 +9,13 @@ definable-serializerでは、 :ref:`definable-serializer-fields` で紹介した
 
 このシリアライザー定義用フィールドからシリアライザークラスを取り出すには、2つの方法があります。
 
-1つめは定義用フィールドからYAML/JSON文字列を取り出し、
-``definable_serializer.serializers`` が持つ ``build_serializer_by_yaml`` 関数に渡す方法です。
-
+1つめは定義用フィールドからYAML/JSON文字列を取り出し :ref:`build_serializer_by_yaml_function` や :ref:`build_serializer_by_json_function` に渡す方法です。
 2つめは ``AbstractDefinitiveSerializerModel`` を継承したモデルクラスを用意する方法です。
 
+ここでは、``AbstractDefinitiveSerializerModel`` が提供する機能について説明します。
+
+
+.. _`abstract_definitive_serializer_model_class`:
 
 AbstractDefinitiveSerializerModel
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -25,8 +27,7 @@ AbstractDefinitiveSerializerModel
 :ref:`definable_serializer_by_json_field_class` を利用しているフィールドを自動で探し、
 ``get_<フィールド名>_serializer_class`` というメソッドを付与します。
 
-また、モデルクラスは複数のシリアライザー定義用のフィールドを持つことも可能です。
-
+モデルクラスは複数のシリアライザー定義用のフィールドを持つことも可能です。
 以下のようなモデルクラスを定義した場合、 ``get_foo_serializer_class`` と ``get_bar_serializer_class``
 という2つのメソッドが自動でモデルオブジェクトに付与されます。
 
