@@ -13,12 +13,11 @@ definable-serializerではシリアライザーを記述するためのフィー
 シリアライザーの定義を保存するモデルフィールド
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-definable-serializerでは、JSON及びYAMLで記述された文字列及びファイルからシリアライザーを作ることができます。
-特にadminサイトでシリアライザーを記述することで、デプロイの手間を緩和するのが目的です。
-adminサイト上でテキストデータの編集を行うのは難しい話ではないものの、YAMLやJSON定義をハイライト無しで記述するのはちょっとした苦行です。
+definable-serializerでは、JSON/YAMLで記述された文字列及びファイルからシリアライザーを作ることができます。
+特にadminサイトでシリアライザーの定義を記述することで、デプロイの手間を無くすのが目的です。
+adminサイト上でテキストデータの編集を行うのは難しい話ではないものの、YAMLやJSONをコードハイライト無しで記述するのはちょっとした苦行です。
 
-この問題を解決するために、CodeMirror2ウィジェットを利用してハイライトサポートを行う
-2つのシリアライザー定義用のフィールドを用意しています。
+この問題を解決するために、CodeMirror2ウィジェットを組み込んだシリアライザー定義用のフィールドを用意しています。
 
 
 .. _`definable_serializer_by_yaml_field_class`:
@@ -82,10 +81,10 @@ DefinableSerializerByJSONFieldは `https://github.com/dmkoch/django-jsonfield <h
 ユーザーからの入力データを保存するモデルフィールド
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-:ref:`storing-input-data` でも取り上げたように、モデルに結びつかないシリアライザーに入力されたデータを永続的に保存するには、
-保存を担うモデルのフィールドにシリアライズ(直列化)された状態でデータを保存します。
+:ref:`storing-input-data` でも取り上げたように、モデルに結びつかないシリアライザーの持つユーザーからの入力データを永続的に保存するには、
+保存を担うモデルクラスのフィールドにシリアライズ(直列化)された状態でデータを保存します。
 
-ようはPythonのネイティブなデータをテキストやバイナリに変換してデータベースのカラムにさえ保存できればどんな形でも構いません。
+ようはPythonのネイティブなデータをテキストやバイナリに変換してデータベースのカラム、即ちモデルフィールドに保存できればどんな形でも構いません。
 
 definable-serializerではユーザーからの入力を保存するために2つのモデルフィールドを用意しています。
 
@@ -97,13 +96,12 @@ JSONField
 
 .. class:: JSONField(*args, **kwargs)
 
-JSONは人気の高いシリアライズの形式です。しかし、Pythonに付属するjsonモジュールにはPythonのネイティブなデータ型である
-``set型`` をシリアライズすることができません。
+JSONは人気の高いシリアライズの形式です。しかし、Pythonに付属するjsonモジュールはPythonのネイティブなデータ型である ``set型`` をシリアライズすることができません。
 
 またensure_asciiの設定を行わないと非ASCII文字を "\\uXXXX" で表してしまうため、入力情報を確認する際に見苦しい状態になります。
 
-definable-serializerでは、 `jsonfield <https://github.com/dmkoch/django-jsonfield>`_
-が提供するJSONFieldをラップし、これらの問題を解消するコンパチビリティクラスを用意しています。
+definable-serializerでは、 `jsonfield <https://github.com/dmkoch/django-jsonfield>`_ が提供するJSONFieldをラップし、
+これらの問題を解消するコンパチビリティクラスを提供しています。
 
 以下に使用例を示します。
 
@@ -140,7 +138,7 @@ YAMLField
 YAMLはJSONと同様、テキストでデータをシリアライズします。記号が少なくインデントでデータ構造を表すため、Pythonのコードのように可読性に優れます。
 
 definable-serializerでは、 django-yamlfield `(https://github.com/datadesk/django-yamlfield) <https://github.com/datadesk/django-yamlfield>`_
-が提供するYAMLFieldをラップし、非ASCII文字が正しく表示されるコンパチビリティクラスを用意しています。
+が提供するYAMLFieldをラップし、非ASCII文字が正しく表示されるコンパチビリティクラスを提供しています。
 
 以下に使用例を示します。
 

@@ -9,8 +9,8 @@ definable-serializerでは、 :ref:`definable-serializer-fields` で紹介した
 
 このシリアライザー定義用フィールドからシリアライザークラスを取り出すには、2つの方法があります。
 
-1つめは定義用フィールドからYAML/JSON文字列を取り出し :ref:`build_serializer_by_yaml_function` や :ref:`build_serializer_by_json_function` に渡す方法です。
-2つめは ``AbstractDefinitiveSerializerModel`` を継承したモデルクラスを用意する方法です。
+1つは定義用フィールドからYAML/JSON文字列を取り出し :ref:`build_serializer_by_yaml_function` や :ref:`build_serializer_by_json_function` に渡す方法です。
+もう1つは ``AbstractDefinitiveSerializerModel`` を継承したモデルクラスを用意する方法です。
 
 ここでは、``AbstractDefinitiveSerializerModel`` が提供する機能について説明します。
 
@@ -25,7 +25,7 @@ AbstractDefinitiveSerializerModel
 このモデルクラスは ``django.db.models.Model`` を親クラスとしており、
 ``__init__`` メソッドの中で :ref:`definable_serializer_by_yaml_field_class` および
 :ref:`definable_serializer_by_json_field_class` を利用しているフィールドを自動で探し、
-``get_<フィールド名>_serializer_class`` というメソッドを付与します。
+``get_<フィールド名>_serializer_class`` というメソッドをモデルオブジェクトに付与します。
 
 モデルクラスは複数のシリアライザー定義用のフィールドを持つことも可能です。
 以下のようなモデルクラスを定義した場合、 ``get_foo_serializer_class`` と ``get_bar_serializer_class``

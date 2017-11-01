@@ -5,7 +5,7 @@
 ==============================================================================
 
 JSONやYAMLで定義したシリアライザーは、実際にシリアライザークラスにしないと確認することができません。
-:ref:`yaml-to-serializer` で説明した方法使ってdjango shellを使って確認することもできますが、これでは入力や見栄えのテストを行うのには不十分です。
+:ref:`yaml-to-serializer` で説明した方法で確認することもできますが、入力や見栄えのテストを行うのには不十分です。
 そのため、definable-serializerでは ``django.contrib.admin.ModelAdmin`` を拡張した ``DefinableSerializerAdmin`` クラスを提供しています。
 
 
@@ -18,10 +18,10 @@ DefinableSerializerAdmin
 
 DefinableSerializerAdminクラスでは以下の機能を提供します。
 
-* 編集画面上部に定義されたシリアライザーのクラス情報を表示する機能
+* 編集画面上部に定義されたシリアライザークラスの情報を表示する機能
 * restframeworkのもつBrowsable APIページを利用して定義されたシリアライザーを表示する機能
 
-特にBrowsable APIページを利用して定義されたシリアライザーは入力のテストを行うことができるため、
+特にBrowsable APIページでは定義したシリアライザーの入力テストを行うことができるため、
 非常に有用です。組み込み方も非常に簡単で、通常は ``admin.ModelAdmin`` を利用するところを
 ``DefinableSerializerAdmin`` に入れ替えるだけです。
 
