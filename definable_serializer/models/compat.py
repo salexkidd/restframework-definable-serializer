@@ -28,7 +28,6 @@ class YAMLField(OriginalYAMLField):
         )
         return value
 
-
     def to_python(self, value):
         if value == "":
             return None

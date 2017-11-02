@@ -403,3 +403,74 @@ definable-serializerではフィールド、シリアライザーともにvalida
     ...
     >>> serializer.is_valid()
     True
+
+
+------------------------------------------------------------------------------
+
+
+Validatorクラスの利用
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. hint:: 0.1.11で登場しました。
+
+validateメソッドはPythonのコードを記述して入力内容のバリデーションを行うことができるため、非常に強力です。
+その反面、恐ろしい事態を引き起こす要因でもあります。
+また、validateメソッドは使いまわすことができないため、同じルーチンでバリデーションを行いたいフィールドが複数あると、validateメソッドを何度も記述するハメになります。
+これは苦行に他なりません。
+
+この問題を解決するには `Validator <http://www.django-rest-framework.org/api-guide/validators/>`_ クラスを利用します。
+
+Validatorクラスを利用する場合は、各フィールドの ``validators`` のリスト中に辞書形式で以下の様に記述します(複数指定可能)。
+
+
+.. code-block:: yaml
+
+    validators:
+      - validator: <パッケージ名>.<モジュール名>.<クラス名>
+        args:
+          ...
+        kwargs:
+          ...
+      - validator: <パッケージ名>.<モジュール名>.<クラス名>
+        args:
+          ...
+        kwargs:
+          ...
+
+利用するValidatorクラスは ``<パッケージ名>.<モジュール名>.<クラス名>`` の形式で指定します。
+引数が必要な場合は ``args`` または ``kwargs`` を渡すことができます。
+
+以下にテスト用のValidatorクラスを利用した記述例とバリデーション後の結果を示します。
+
+.. code-block:: yaml
+
+    main:
+      name: UsingValidator
+      fields:
+      - name: hello_only_field
+        field: CharField
+        field_kwargs:
+          style:
+            placeholder: "..."
+        validators:
+          - validator: definable_serializer.tests.test_serializers.CorrectDataValidator
+            args:
+              - hello
+      - name: goodbye_only_field
+        field: CharField
+        field_kwargs:
+          style:
+            placeholder: "..."
+        validators:
+          - validator: definable_serializer.tests.test_serializers.CorrectDataValidator
+            args:
+            - goodbye
+
+.. figure:: imgs/using_validators.png
+
+    Validatorクラスを利用した例
+
+
+.. warning::
+
+    CorrectDataValidatorクラスはテスト用です。テスト以外では利用しないように注意してください。

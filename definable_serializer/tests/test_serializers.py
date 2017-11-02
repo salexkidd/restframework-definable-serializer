@@ -15,6 +15,16 @@ TEST_DATA_FILE_DIR = os.path.join(
 )
 
 
+class CorrectDataValidator:
+    def __init__(self, correct_data):
+        self.correct_data = correct_data
+
+    def __call__(self, value):
+        if value != self.correct_data:
+            raise ValidationError("Value is not '{}'".format(
+                self.correct_data))
+
+
 class TestSerializer(TestCase):
 
     def test_buildserializer(self):
@@ -325,3 +335,38 @@ class TestSerializer(TestCase):
         wrong_serializer_validate_method["main"]["serializer_validate_method"] = "It's not a func"
         with self.assertRaises(ValidationError):
             serializer_kls = definable_serializer.build_serializer(wrong_serializer_validate_method)
+
+    def test_using_validators(self):
+        yaml_file = os.path.join(TEST_DATA_FILE_DIR, "using_validator.yml")
+        serializer_class = definable_serializer.build_serializer_by_yaml_file(yaml_file)
+
+        serializer = serializer_class(data={"using_validator_field": "correct_data"})
+        self.assertTrue(serializer.is_valid())
+
+        serializer = serializer_class(data={"using_validator_field": "wrong_data"})
+        self.assertFalse(serializer.is_valid())
+
+        self.assertEqual(
+            len(serializer.fields["using_validator_field"].validators), 2
+        )
+
+    def test_using_not_exist_validators(self):
+
+        with open(os.path.join(TEST_DATA_FILE_DIR, "using_validator.yml")) as fh:
+            yaml_data = yaml.load(fh)
+
+        yaml_data["main"]["fields"][0]["validators"][0]["validator"]  = "foo.bar.NotExistValidator"
+
+        with self.assertRaises(ValidationError):
+            serializer_class = definable_serializer.build_serializer(yaml_data)
+
+
+    def test_using_not_correct_validator_args(self):
+
+        with open(os.path.join(TEST_DATA_FILE_DIR, "using_validator.yml")) as fh:
+            yaml_data = yaml.load(fh)
+
+        yaml_data["main"]["fields"][0]["validators"][0]["kwargs"] = {"kwargs": "not_allowed"}
+
+        with self.assertRaises(ValidationError):
+            serializer_class = definable_serializer.build_serializer(yaml_data)

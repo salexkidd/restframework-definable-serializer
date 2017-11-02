@@ -1,0 +1,15 @@
+
+main:
+  name: UsingValidator
+  fields:
+    - name: using_validator_field
+      field: CharField
+      field_kwargs:
+        required: true
+      validators:
+      - validator: definable_serializer.tests.test_serializers.CorrectDataValidator
+        args:
+          - correct_data
+      - validator: definable_serializer.tests.test_serializers.CorrectDataValidator
+        args:
+          - correct_data

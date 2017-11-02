@@ -20,6 +20,7 @@ import pydoc
 import types
 import yaml
 import warnings
+import copy
 
 NOT_AVAILABLE_FIELDS = (
     rf_serializers.ListField,
@@ -77,9 +78,39 @@ class DefinableSerializerMeta(rf_serializers.SerializerMetaclass):
         fields = dict()
         validate_methods = dict()
 
+        def _build_validators(defn):
+            field_name = defn["name"]
+            validators = list()
+
+            for validator_defn in defn.get("validators", list()):
+                validator_class_path = validator_defn["validator"]
+                validator_class = pydoc.locate(validator_class_path)
+
+                if not validator_class:
+                    raise ValidationError({
+                        field_name: "cannot import name '{}'".format(
+                            validator_class_path
+                        )
+                    })
+
+                try:
+                    validators.append(
+                        validator_class(
+                            *validator_defn.get("args", list()),
+                            **validator_defn.get("kwargs", dict())
+                        )
+                    )
+                except Exception as e:
+                    raise ValidationError({field_name: e})
+
+            return validators
+
         for defn in fields_defn:
             field_class_str = defn["field"]
             field_name = defn["name"]
+
+            field_args = copy.deepcopy(defn.get("field_args", list()))
+            field_kwargs = copy.deepcopy(defn.get("field_kwargs", dict()))
 
             field_class = metacls._get_field_class(
                 field_class_str, serializer_classes)
@@ -92,11 +123,13 @@ class DefinableSerializerMeta(rf_serializers.SerializerMetaclass):
                 e_str = "Can't find '{}' field class".format(field_class_str)
                 raise ValidationError({field_name: e_str})
 
-            field_args = defn.get("field_args", list())
-            field_kwargs = defn.get("field_kwargs", dict())
+            validators = _build_validators(defn)
+            if validators:
+                field_kwargs["validators"] = validators
 
             try:
                 fields[field_name] = field_class(*field_args, **field_kwargs)
+
             except Exception as e:
                 raise ValidationError({field_name: e})
 
@@ -126,9 +159,9 @@ class DefinableSerializerMeta(rf_serializers.SerializerMetaclass):
                     })
 
                 except Exception as e:
-                    raise ValidationError({
-                        field_name: "Can't parse {} field_validate_method: {}".format(field_name, e)
-                    })
+                    e_str = "Can't parse {} field_validate_method: {}".format(
+                        field_name, e)
+                    raise ValidationError({field_name: e_str})
 
         return fields, validate_methods
 
