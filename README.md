@@ -45,6 +45,17 @@ INSTALLED_APPS = [
 
 For extensive Japanese documentation see the docs read it on [Readthedocs](http://restframework-definable-serializer.readthedocs.io/ja/latest/)
 
+## Translation
+
+[Transifex(https://www.transifex.com/restframework-definable-serializer/restframework-definable-serializer-documentation/dashboard/)](https://www.transifex.com/restframework-definable-serializer/restframework-definable-serializer-documentation/dashboard/) is used to manage translations.
+
+Feel free to improve translations.
+
+Currently supported languages are:
+   - Japanese
+
+You can request to add your own language directly on Transifex.
+
 
 # Sample code
 You can try restframework-definable-serializer.
