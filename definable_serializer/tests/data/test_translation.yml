@@ -1,0 +1,44 @@
+main:
+  name: FirstSurvey
+  fields:
+    - name: test_field
+      field: CharField
+      field_kwargs:
+        label:
+          default: test_field_label_default
+          ja: test_field_label_ja
+        help_text:
+          default: test_field_help_text_default
+          ja: test_field_help_text_ja
+
+    - name: gendar_field
+      field: ChoiceField
+      field_args:
+        - - - male
+            - default: gendar_field_choice_male_default
+              ja: gendar_field_choice_male_ja
+          - - female
+            - default: gendar_field_choice_female_default
+              ja: gendar_field_choice_female_ja
+          - - other
+            - default: gendar_field_choice_other_default
+              ja: gendar_field_choice_other_ja
+      field_kwargs:
+        label:
+          default: gendar_field_label_default
+          ja: gendar_field_label_ja
+        help_text:
+          default: gendar_field_help_text_default
+          ja: gendar_field_help_text_ja
+        initial: male
+
+    - name: filepath_field
+      field: FilePathField
+      field_kwargs:
+        path: "/"
+        label:
+          default: filepath_field_label_default
+          ja: filepath_field_label_ja
+        help_text:
+          default: filepath_field_help_text_default
+          ja: filepath_field_help_text_ja

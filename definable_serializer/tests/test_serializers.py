@@ -1,4 +1,5 @@
 from django.test import TestCase
+from django.http import HttpRequest
 from django.core.exceptions import ValidationError
 from rest_framework.serializers import CharField
 
@@ -360,9 +361,7 @@ class TestSerializer(TestCase):
         with self.assertRaises(ValidationError):
             serializer_class = definable_serializer.build_serializer(yaml_data)
 
-
     def test_using_not_correct_validator_args(self):
-
         with open(os.path.join(TEST_DATA_FILE_DIR, "using_validator.yml")) as fh:
             yaml_data = yaml.load(fh)
 
@@ -370,3 +369,39 @@ class TestSerializer(TestCase):
 
         with self.assertRaises(ValidationError):
             serializer_class = definable_serializer.build_serializer(yaml_data)
+
+    def test_translation(self):
+
+        def _check(serializer, field_name, target, correct_str):
+            self.assertEqual(
+                getattr(serializer.fields[field_name], target), correct_str)
+
+        yaml_file = os.path.join(TEST_DATA_FILE_DIR, "test_translation.yml")
+        serializer_class = definable_serializer.build_serializer_by_yaml_file(yaml_file)
+
+        request = HttpRequest()
+        setattr(request, "LANGUAGE_CODE", "en")
+        serializer_default = serializer_class(context={"request": request})
+
+        # label and help_text for default
+        for target in ("label", "help_text",):
+            for field_name in serializer_default.fields.keys():
+                correct_str = "{}_{}_default".format(field_name, target)
+                _check(serializer_default, field_name, target, correct_str)
+
+        # gendar_field check
+        for value, label in serializer_default.fields["gendar_field"].choices.items():
+            self.assertTrue(label.endswith, "_default")
+
+        setattr(request, "LANGUAGE_CODE", "ja")
+        serializer_ja = serializer_class(context={"request": request})
+
+        # label and help_text for default
+        for target in ("label", "help_text",):
+            for field_name in serializer_default.fields.keys():
+                correct_str = "{}_{}_ja".format(field_name, target)
+                _check(serializer_ja, field_name, target, correct_str)
+
+        # gendar_field check
+        for value, label in serializer_default.fields["gendar_field"].choices.items():
+            self.assertTrue(label.endswith, "_ja")

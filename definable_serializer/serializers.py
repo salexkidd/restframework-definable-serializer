@@ -10,6 +10,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 from django.utils.translation import ugettext as _
 from django.core.exceptions import ValidationError
+from django.utils.translation import get_language
 
 from rest_framework import serializers as rf_serializers
 
@@ -105,6 +106,37 @@ class DefinableSerializerMeta(rf_serializers.SerializerMetaclass):
 
             return validators
 
+        def _translation_default(field_name, field_class, field_args, field_kwargs):
+            for target in ("label", "help_text",):
+                value = field_kwargs.get(target, None)
+                if isinstance(value, dict):
+                    value = value.get("default", None)
+                    if value is None:
+                        error_msg = "'default' not in '{}'".format(target)
+                        raise ValidationError({field_name: error_msg})
+
+                    field_kwargs[target] = value
+
+            # Choices
+            is_choices = all([
+                issubclass(field_class, rf_serializers.ChoiceField),
+                not issubclass(field_class, rf_serializers.FilePathField)
+            ])
+
+            if is_choices:
+                new_choices = list()
+                for choice in field_args[0]:
+                    value, label = choice[0], choice[1]
+                    if isinstance(label, dict):
+                        label = label.get("default", None)
+                        if label is None:
+                            error_msg = "'default' not in choices."
+                            raise ValidationError({field_name: error_msg})
+
+                    new_choices.append((value, label))
+
+                field_args[0] = new_choices
+
         for defn in fields_defn:
             field_class_str = defn["field"]
             field_name = defn["name"]
@@ -122,6 +154,8 @@ class DefinableSerializerMeta(rf_serializers.SerializerMetaclass):
             if not field_class:
                 e_str = "Can't find '{}' field class".format(field_class_str)
                 raise ValidationError({field_name: e_str})
+
+            _translation_default(field_name, field_class, field_args, field_kwargs)
 
             validators = _build_validators(defn)
             if validators:
@@ -218,8 +252,11 @@ class DefinableSerializerMeta(rf_serializers.SerializerMetaclass):
                     field_name: "Can't parse serializer_validate_method: {}".format(e)
                 })
 
-        return super().__new__(
+        kls = super().__new__(
             metacls, serializer_name, bases, namespace, *kwargs)
+
+        setattr(kls, "serializer_definition_data", serializer_defn)
+        return kls
 
     def __init__(cls, name, bases, namespace, **kwargs):
         super().__init__(name, bases, namespace)
@@ -258,8 +295,42 @@ def _defn_pre_checker(defn_data):
 
 
 class BaseDefinableSerializer(rf_serializers.Serializer):
-    ...
 
+    def switch_choice_label_language(self, **kwargs):
+        request = kwargs.get("context", {}).get("request", {})
+        lang = getattr(request, "LANGUAGE_CODE", get_language())
+
+        for field_defn in self.serializer_definition_data["fields"]:
+            field = self.fields[field_defn["name"]]
+
+            # field_kwargs
+            for target in ("label", "help_text",):
+                value = field_defn.get("field_kwargs", {}).get(target, None)
+                if isinstance(value, dict):
+                    setattr(field, target, value.get(lang, getattr(field, target, "")))
+
+            # choices
+            need_switch_lang = all([
+                isinstance(field, rf_serializers.ChoiceField),
+                not isinstance(field, rf_serializers.FilePathField)
+            ])
+
+            if need_switch_lang:
+                new_choice_list = list()
+
+                choice_list = field_defn["field_args"][0]
+                for i, choice in enumerate(choice_list):
+                    value, choice_label = choice[0], choice[1]
+                    if isinstance(choice_list[i][1], dict):
+                        choice_label = choice_list[i][1].get(lang, choice_label.get("default"))
+                    new_choice_list.append((value, choice_label))
+
+                field._set_choices(new_choice_list)
+
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.switch_choice_label_language(**kwargs)
 
 def build_serializer(defn_data, allow_validate_method=True):
 
