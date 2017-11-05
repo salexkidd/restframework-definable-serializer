@@ -405,3 +405,43 @@ class TestSerializer(TestCase):
         # gendar_field check
         for value, label in serializer_default.fields["gendar_field"].choices.items():
             self.assertTrue(label.endswith, "_ja")
+
+        # not in default test
+        with open(yaml_file, "r") as fh:
+            yaml_data = yaml.load(fh)
+
+        # 'default' not in label test
+        copied_yaml_data = deepcopy(yaml_data)
+        with self.assertRaises(ValidationError) as e:
+            del(copied_yaml_data["main"]["fields"][1]["field_kwargs"]["label"]["default"])
+            definable_serializer.build_serializer(copied_yaml_data)
+
+        self.assertIn("gendar_field", e.exception.error_dict)
+        self.assertEqual(
+            e.exception.message_dict["gendar_field"][0],
+            "'default' not in 'label'"
+        )
+
+        # 'default' not in help_text test
+        copied_yaml_data = deepcopy(yaml_data)
+        with self.assertRaises(ValidationError) as e:
+            del(copied_yaml_data["main"]["fields"][1]["field_kwargs"]["help_text"]["default"])
+            definable_serializer.build_serializer(copied_yaml_data)
+
+        self.assertIn("gendar_field", e.exception.error_dict)
+        self.assertEqual(
+            e.exception.message_dict["gendar_field"][0],
+            "'default' not in 'help_text'"
+        )
+
+        # 'default' not in choices test
+        copied_yaml_data = deepcopy(yaml_data)
+        with self.assertRaises(ValidationError) as e:
+            del(copied_yaml_data["main"]["fields"][1]["field_args"][0][0][1]["default"])
+            definable_serializer.build_serializer(copied_yaml_data)
+
+        self.assertIn("gendar_field", e.exception.error_dict)
+        self.assertEqual(
+            e.exception.message_dict["gendar_field"][0],
+            "'default' is required in choices."
+        )

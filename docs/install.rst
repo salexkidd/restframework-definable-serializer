@@ -6,7 +6,7 @@
 
 
 パッケージのインストール
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 以下のコマンドを実行してインストールしてください::
 
@@ -21,7 +21,7 @@
 
 
 INSTALLED_APPSへの追加
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 settings.py中にある ``INSTALLED_APPS`` に ``codemirror2`` と ``definable_serializer`` を追加してください。::
 
@@ -30,4 +30,16 @@ settings.py中にある ``INSTALLED_APPS`` に ``codemirror2`` と ``definable_s
         'rest_framework',
         'codemirror2',
         'definable_serializer',
+    )
+
+
+LocaleMiddlewareの追加
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+:ref:`field_i18n` を利用する場合は settings.py中にある ``MIDDLEWARE`` に ``LocaleMiddleware`` を追加してください。::
+
+    MIDDLEWARE = (
+        ...
+        "django.middleware.locale.LocaleMiddleware",
+        ...
     )

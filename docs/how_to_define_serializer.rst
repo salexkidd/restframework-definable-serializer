@@ -201,7 +201,6 @@ djangoのフォームも、formsets等を利用して複数のフォームを並
 
 上記の定義は以下のPythonコードと同義になります。
 
-
 .. code-block:: python
 
     >>> from rest_framework import serializers
@@ -272,6 +271,72 @@ definable-serializerではサードパーティパッケージ、つまりrestfr
     definable-serializerでは TemplateHTMLRendererに向けて、いくつかのシリアライザーフィールドを提供しています。
     :ref:`extra_serializer_fields` を御覧ください
 
+
+.. _`field_i18n`:
+
+フィールドの国際化
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+**0.1.12で登場しました**
+
+djangoは国際化機構を提供しているため、システム全体の翻訳を行うことが可能です。
+
+しかしこの機構はgettextを利用するため、コンパイルされた翻訳ファイルをサーバーにデプロイする必要があります。
+definable-serializerの目的はデプロイの手間を減らすことなので、残念ながらこの方法は利用できません。
+
+そのため ``label``, ``help_text``, ``choices`` にlocaleと翻訳テキストを対にした辞書を指定します。
+指定された翻訳テキストはリクエストオブジェクトに含まれる ``request.LANGUAGE_CODE`` を元に取り出され、シリアライザークラスをオブジェクト化する際に利用されます。
+
+また、locale情報に対応するキーが存在しない場合は ``default`` キーにフォールバックするため、必ず指定する必要があります。
+
+.. warning::
+
+    locale情報の取得にはdjangoが提供するLocaleMiddlewareを利用する必要があります。
+    settings.pyの ``MIDDLEWARE`` に ``django.middleware.locale.LocaleMiddleware`` を追加してください。
+    詳しくは `Translation <https://docs.djangoproject.com/en/1.11/topics/i18n/translation/>`_ を参照してください
+
+以下に翻訳テキストを含めたシリアライザーの定義例を示します。
+
+
+.. code-block:: yaml
+
+    main:
+      name: I18NTest
+      fields:
+      - name: animal_field
+        field: ChoiceField
+        field_args:
+        - - -
+            - default: '------- Please choice me -------'
+              ja: '------- 選択してください -------'
+          - - dog
+            - default: Dog 🐶
+              ja: イヌ 🐶
+          - - cat
+            - default: Cat 😺
+              ja: ネコ 😺
+          - - rabbit
+            - default: Rabbit 🐰
+              ja: ウサギ 🐰
+        field_kwargs:
+          help_text:
+            default: Please select one of your favorite animal 😁
+            ja: 好きな動物を選んでね 😁
+          label:
+            default: Favorite Animal
+            ja: 好きな動物
+
+
+国際化が正しく行われたかを確認するためには、ブラウザーのAccept-languageを変更する必要があります。
+もし、あなたがChromeを利用している場合は `Quick Language Switcher <https://chrome.google.com/webstore/detail/quick-language-switcher/pmjbhfmaphnpbehdanbjphdcniaelfie>`_ の利用をおすすめします。
+
+.. figure:: imgs/transfer_ja.png
+
+    ユーザーのlocaleがjaの場合
+
+.. figure:: imgs/transfer_fallback.png
+
+    ユーザーのlocaleが存在しなかった場合
 
 ------------------------------------------------------------------------------
 
@@ -411,7 +476,7 @@ definable-serializerではフィールド、シリアライザーともにvalida
 Validatorクラスの利用
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. hint:: 0.1.11で登場しました。
+**0.1.11で登場しました。**
 
 validateメソッドはPythonのコードを記述して入力内容のバリデーションを行うことができるため、非常に強力です。
 その反面、恐ろしい事態を引き起こす要因でもあります。

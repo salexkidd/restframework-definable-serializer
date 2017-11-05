@@ -12,6 +12,9 @@ Zen Of Pythonの *暗示するより明示するほうがいい* という観点
     これらのフィールドは将来的に別パッケージとして提供される可能性があります。
 
 
+------------------------------------------------------------------------------
+
+
 CheckRequiredField
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
@@ -31,6 +34,9 @@ CheckRequiredField
       fields:
       - name: agreement
         field: definable_serializer.extra_fields.CheckRequiredField
+
+
+------------------------------------------------------------------------------
 
 
 MultipleCheckboxField
@@ -73,8 +79,55 @@ fieldには ``definable_serializer.extra_fields.MultipleCheckboxField`` を指�
     インライン化されたMultipleCheckboxField
 
 
+------------------------------------------------------------------------------
+
+
+.. _`check_required_field`:
+
+ChoiceRequiredField
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+.. class:: ChoiceRequiredField(choices, *args, **kwargs)
+
+**0.1.12 で登場しました。**
+
+選択必須のリストを提供します。
+
+基本的な動作は ``ChoiceField`` と変わりませんがユーザーに選択を促すブランクチョイスを入れるため、 ``choices`` の1つ目の値が必ずnull値である必要があります。
+
+このクラスは restframeworkの ``ChoiceField`` を継承してつくられています。その他のオプションについては
+`ChoiceField <http://www.django-rest-framework.org/api-guide/fields/#choicefield>`_ を参照してください。
+
+.. code-block:: yaml
+
+    main:
+      name: YourFavoriteAnimal
+      fields:
+      - name: animal_choice_field
+        field: definable_serializer.extra_fields.ChoiceWithBlankField
+        field_args:
+        - - - null
+            - "-------- Please Choice one 😉 --------"
+          - - dog
+            - 🐶Dog
+          - - cat
+            - 😺Cat
+          - - rabbit
+            - 🐰Rabbit
+        field_kwargs:
+          label: Lovely Animals
+          blank_label: '-------- Please Choice 😉 --------'
+          help_text: Please choice your favorite animal
+
+
+------------------------------------------------------------------------------
+
+
 ChoiceWithBlankField
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+.. warning::
+    ChoiceWithBlankFieldクラスは廃止予定です。変わりに :ref:`check_required_field` を利用してください。
 
 .. class:: MultipleCheckboxField(choices, *args, blank_label=None, **kwargs)
 
@@ -110,6 +163,9 @@ fieldには ``definable_serializer.extra_fields.ChoiceWithBlankField`` を指定
 .. figure:: imgs/choice_with_blank_field.png
 
     blank_labelに文字を渡した例。blank_labelが空の場合は "---------" となります。
+
+
+------------------------------------------------------------------------------
 
 
 RadioField
@@ -148,6 +204,9 @@ fieldには ``definable_serializer.extra_fields.RadioField`` を指定します�
 .. figure:: imgs/radio_field.png
 
     インライン化されたRadioField
+
+
+------------------------------------------------------------------------------
 
 
 TextField

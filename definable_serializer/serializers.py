@@ -110,6 +110,7 @@ class DefinableSerializerMeta(rf_serializers.SerializerMetaclass):
             """
             Will change each attribute string to 'default' string if give translation text
             """
+            # label and help_text
             for target in ("label", "help_text",):
                 value = field_kwargs.get(target, None)
                 if isinstance(value, dict):
@@ -118,7 +119,6 @@ class DefinableSerializerMeta(rf_serializers.SerializerMetaclass):
                         error_msg = "'default' not in '{}'".format(target)
                         raise ValidationError({field_name: error_msg})
                     field_kwargs[target] = value
-
 
             # Choices
             need_switch_to_default = all([

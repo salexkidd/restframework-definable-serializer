@@ -1,4 +1,5 @@
 from django.test import TestCase
+from django.core.exceptions import ValidationError
 from rest_framework import serializers as rf_serializers
 
 from .. import extra_fields
@@ -81,6 +82,7 @@ class ChoiceWithBlankFieldSerializer(rf_serializers.Serializer):
 
 
 class TestChoiceWithBlankField(TestCase):
+
     def test_choice_null_value(self):
         serializer = ChoiceWithBlankFieldSerializer(
             data={"target_field": ""}
@@ -97,6 +99,39 @@ class TestChoiceWithBlankField(TestCase):
         serializer = ChoiceWithBlankFieldSerializer(
             data={"target_field": "-1"}
         )
+        self.assertFalse(serializer.is_valid())
+
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+class ChoiceRequiredFieldSerializer(rf_serializers.Serializer):
+    target_field = extra_fields.ChoiceRequiredField(
+        (
+            (None, {
+                "default": "none_select_default",
+                "ja": "none_select_ja"
+            }),
+            (1, "one"),
+            (2, "two"),
+            (3, "three"),
+        ),
+    )
+
+class TestChoiceRequiredField(TestCase):
+
+    def test_within_null_value_choice(self):
+        target_field = extra_fields.ChoiceRequiredField(((None, "---"), (1, "1"), (2, "2")))
+
+    def test_without_null_value_choice(self):
+        with self.assertRaises(ValueError):
+            target_field = extra_fields.ChoiceRequiredField(((1, "1"), (2, "2")))
+
+    def test_choice(self):
+        # valid choice
+        serializer = ChoiceRequiredFieldSerializer(data={"target_field": 1})
+        self.assertTrue(serializer.is_valid())
+
+        # invalid choice
+        serializer = ChoiceRequiredFieldSerializer(data={"target_field": None})
         self.assertFalse(serializer.is_valid())
 
 

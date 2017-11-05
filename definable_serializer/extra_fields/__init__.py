@@ -12,6 +12,7 @@ from django.db.models.fields import BLANK_CHOICE_DASH
 from rest_framework import serializers as rf_serializers
 from rest_framework import fields as rf_fields
 from copy import copy
+import warnings
 
 
 class CheckRequiredField(rf_fields.BooleanField):
@@ -76,8 +77,13 @@ class ChoiceWithBlankField(rf_fields.ChoiceField):
     }
 
     def __init__(self, choices, *args, blank_label=None, **kwargs):
-        blank_choices = copy(BLANK_CHOICE_DASH)
 
+        warnings.warn(
+            "ChoiceWithBlankField' will be deprecated in the future. "
+            "Please use to 'RequireChoiceField'.",
+            PendingDeprecationWarning
+        )
+        blank_choices = copy(BLANK_CHOICE_DASH)
         blank_label = blank_label or blank_choices[0][1]
         if blank_label:
             blank_choices = [["", blank_label],]
@@ -91,6 +97,34 @@ class ChoiceWithBlankField(rf_fields.ChoiceField):
         data = super().to_internal_value(data)
         if data == "" or data is None:
             self.fail('this_field_is_required')
+        return data
+
+
+class ChoiceRequiredField(rf_fields.ChoiceField):
+    """
+    ChoiceRequiredField
+
+    definable_serializer.extra_fields.ChoiceRequiredField
+    """
+    custom_error_messages = {
+        'select_a_valid_choice': 'Select a valid choice.'
+    }
+
+    def __init__(self, choices, *args, **kwarsg):
+        super().__init__(choices, *args, **kwarsg)
+        self.error_messages.update(self.custom_error_messages)
+
+        first_value = choices[0][0]
+
+        if first_value is not None:
+            raise ValueError(
+                "first choice value must be blank or None. "
+                "({}, {})".format(choices[0][0], choices[0][1]))
+
+    def to_internal_value(self, data):
+        data = super().to_internal_value(data)
+        if data == "" or data is None or data is False:
+            self.fail('select_a_valid_choice')
         return data
 
 
