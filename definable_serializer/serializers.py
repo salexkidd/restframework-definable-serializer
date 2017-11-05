@@ -120,10 +120,23 @@ class DefinableSerializerMeta(rf_serializers.SerializerMetaclass):
                         raise ValidationError({field_name: error_msg})
                     field_kwargs[target] = value
 
+            # placeholder
+            placeholder = field_kwargs.get("style", {}).get("placeholder", None)
+            if isinstance(placeholder, dict):
+                placeholder = placeholder.get("default", None)
+                if placeholder is None:
+                    error_msg = "'default' not in 'placeholder'"
+                    raise ValidationError({field_name: error_msg})
+
+                print(placeholder)
+                field_kwargs["style"]["placeholder"] = placeholder
+
             # Choices
             need_switch_to_default = all([
                 issubclass(field_class, rf_serializers.ChoiceField),
-                not issubclass(field_class, rf_serializers.FilePathField)])
+                not issubclass(field_class, rf_serializers.FilePathField),
+                len(field_args),
+            ])
 
             if need_switch_to_default:
                 new_choices = list()
@@ -317,21 +330,35 @@ class BaseDefinableSerializer(rf_serializers.Serializer):
             for target in ("label", "help_text",):
                 value = field_defn.get("field_kwargs", {}).get(target, None)
                 if isinstance(value, dict):
-                    setattr(field, target, value.get(lang, getattr(field, target, "")))
+                    value = value.get(lang, None)
+                    if value:
+                        setattr(field, target, value)
+
+            # placeholder
+            value = field_defn.get("field_kwargs", {}).get("style", {}).get(
+                "placeholder", None)
+
+            if isinstance(value, dict):
+                value = value.get(lang, None)
+                if value:
+                    field.style["placeholder"] = value
 
             # choices
-            need_switch_lang = all([
-                isinstance(field, rf_serializers.ChoiceField),
-                not isinstance(field, rf_serializers.FilePathField)
+            need_switch_language = all([
+                issubclass(field.__class__, rf_serializers.ChoiceField),
+                not issubclass(field.__class__, rf_serializers.FilePathField),
+                len(field_defn.get("field_args", []))
             ])
 
-            if need_switch_lang:
+            if need_switch_language:
                 new_choice_list = list()
                 choice_list = field_defn["field_args"][0]
                 for i, choice in enumerate(choice_list):
                     value, choice_label = choice[0], choice[1]
                     if isinstance(choice_list[i][1], dict):
-                        choice_label = choice_list[i][1].get(lang, choice_label.get("default"))
+                        trans_choice_label = choice_list[i][1].get(lang, None)
+                        if trans_choice_label:
+                            choice_label = trans_choice_label
                     new_choice_list.append((value, choice_label))
                 field._set_choices(new_choice_list)
 

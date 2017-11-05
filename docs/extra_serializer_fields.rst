@@ -212,12 +212,20 @@ fieldには ``definable_serializer.extra_fields.RadioField`` を指定します�
 TextField
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
+.. warning::
+    TextFieldクラスは廃止予定です。変わりに `CharField` を利用してstyle引数を渡してください。
+    詳しくは `field-styles <http://www.django-rest-framework.org/topics/html-and-forms/#field-styles>`_ を参照してください。
+
+    また、placeholder引数は :ref:`field_i18n` 翻訳の対象になりません。
+
 テキストエリアを提供します。
 
 fieldには ``definable_serializer.extra_fields.TextField`` を指定します。
 
 - ``rows`` に数値を渡すことででテキストエリアの行数を指定することができます。
 - ``placeholder`` に文字列を渡すとプレースホルダー文字列を表示することができます。
+
+
 
 このクラスは restframeworkの ``CharField`` を継承してつくられています。その他のオプションについては
 `CharField <http://www.django-rest-framework.org/api-guide/fields/#charfield>`_ を参照してください。

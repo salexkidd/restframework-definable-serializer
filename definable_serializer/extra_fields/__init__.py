@@ -149,10 +149,17 @@ class TextField(rf_fields.CharField):
     definable_serializer.extra_fields.TextField
     """
     def __init__(self, *args, rows=5, placeholder="", **kwargs):
-        kwargs["style"] = {
+
+        warnings.warn(
+            "TextField will be deprecated in the future.",
+            PendingDeprecationWarning
+        )
+
+        style = kwargs.get("style", dict())
+        style.update({
             'base_template': 'textarea.html',
             'rows': rows,
-            'placeholder': placeholder,
-        }
-
+            'placeholder': kwargs.get("style", {}).get("placeholder", placeholder)
+        })
+        kwargs["style"] = style
         super().__init__(*args, **kwargs)
