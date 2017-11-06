@@ -419,7 +419,7 @@ class TestSerializer(TestCase):
         self.assertIn("gendar_field", e.exception.error_dict)
         self.assertEqual(
             e.exception.message_dict["gendar_field"][0],
-            "'default' not in 'label'"
+            "'default' is required in 'label'"
         )
 
         # 'default' not in help_text test
@@ -431,7 +431,7 @@ class TestSerializer(TestCase):
         self.assertIn("gendar_field", e.exception.error_dict)
         self.assertEqual(
             e.exception.message_dict["gendar_field"][0],
-            "'default' not in 'help_text'"
+            "'default' is required in 'help_text'"
         )
 
         # 'default' not in choices test
@@ -443,5 +443,5 @@ class TestSerializer(TestCase):
         self.assertIn("gendar_field", e.exception.error_dict)
         self.assertEqual(
             e.exception.message_dict["gendar_field"][0],
-            "'default' is required in choices."
+            "'default' is required in 'choices'"
         )

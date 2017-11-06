@@ -39,9 +39,67 @@ __all__ = (
 )
 
 
-class DefinableSerializerMeta(rf_serializers.SerializerMetaclass):
-    # https://stackoverflow.com/questions/27258557/metaclass-arguments-for-python-3-x
+class TranslationMixin:
+    @classmethod
+    def _get_translate_string(metacls, field_defn, field_name, field_class, language="default", raise_exception=False):
 
+        def _get_or_default(v, target):
+            trans_text = None
+            if isinstance(v, dict):
+                trans_text = v.get(language, None) or v.get("default", None)
+                if trans_text is None and raise_exception:
+                    raise ValidationError({
+                        field_name: "'{}' is required in '{}'".format(language, target)
+                    })
+            return trans_text
+
+        field_args = field_defn.get("field_args", {})
+        field_kwargs = field_defn.get("field_kwargs", {})
+
+        result = dict()
+
+        # label and help_text
+        for target in ("label", "help_text", "initial"):
+            trans_text = _get_or_default(field_kwargs.get(target, None), target)
+            if trans_text:
+                result[target] = trans_text
+
+        # initial
+        target = "initial"
+        trans_text = _get_or_default(field_kwargs.get(target, None), target)
+        if trans_text and issubclass(field_class, rf_serializers.CharField):
+            result[target] = trans_text
+
+        # placeholder
+        target = "placeholder"
+        value = field_kwargs.get("style", {}).get(target, None)
+        trans_text = _get_or_default(value, target)
+        if trans_text:
+            result[target] = trans_text
+
+        # choices
+        target = "choices"
+        can_trans_choices = all([
+            len(field_defn.get("field_args", [])),
+            not issubclass(field_class, rf_serializers.FilePathField),
+            issubclass(field_class, rf_serializers.ChoiceField),
+        ])
+        if can_trans_choices:
+            new_choice_list = list()
+            for i, choice in enumerate(field_args[0]):
+                choice_value, choice_label = choice[0], choice[1]
+                trans_text = _get_or_default(choice_label, target)
+                if trans_text:
+                    choice_label = trans_text
+                new_choice_list.append((choice_value, choice_label))
+
+            result[target] = new_choice_list
+
+        return result
+
+
+class DefinableSerializerMeta(rf_serializers.SerializerMetaclass, TranslationMixin):
+    # https://stackoverflow.com/questions/27258557/metaclass-arguments-for-python-3-x
     @classmethod
     def _parse_validate_method(metacls, method_str):
         global_var, local_var = dict(), dict()
@@ -106,51 +164,6 @@ class DefinableSerializerMeta(rf_serializers.SerializerMetaclass):
 
             return validators
 
-        def _set_to_default_string(field_name, field_class, field_args, field_kwargs):
-            """
-            Will change each attribute string to 'default' string if give translation text
-            """
-            # label and help_text
-            for target in ("label", "help_text",):
-                value = field_kwargs.get(target, None)
-                if isinstance(value, dict):
-                    value = value.get("default", None)
-                    if value is None:
-                        error_msg = "'default' not in '{}'".format(target)
-                        raise ValidationError({field_name: error_msg})
-                    field_kwargs[target] = value
-
-            # placeholder
-            placeholder = field_kwargs.get("style", {}).get("placeholder", None)
-            if isinstance(placeholder, dict):
-                placeholder = placeholder.get("default", None)
-                if placeholder is None:
-                    error_msg = "'default' not in 'placeholder'"
-                    raise ValidationError({field_name: error_msg})
-
-                print(placeholder)
-                field_kwargs["style"]["placeholder"] = placeholder
-
-            # Choices
-            need_switch_to_default = all([
-                issubclass(field_class, rf_serializers.ChoiceField),
-                not issubclass(field_class, rf_serializers.FilePathField),
-                len(field_args),
-            ])
-
-            if need_switch_to_default:
-                new_choices = list()
-                for choice in field_args[0]:
-                    value, label = choice[0], choice[1]
-                    if isinstance(label, dict):
-                        label = label.get("default", None)
-                        if label is None:
-                            error_msg = "'default' is required in choices."
-                            raise ValidationError({field_name: error_msg})
-                    new_choices.append((value, label))
-
-                field_args[0] = new_choices
-
         for defn in fields_defn:
             field_class_str = defn["field"]
             field_name = defn["name"]
@@ -169,7 +182,22 @@ class DefinableSerializerMeta(rf_serializers.SerializerMetaclass):
                 e_str = "Can't find '{}' field class".format(field_class_str)
                 raise ValidationError({field_name: e_str})
 
-            _set_to_default_string(field_name, field_class, field_args, field_kwargs)
+            # set trans result(label, help_text, placeholder, choices)
+            trans_dict = metacls._get_translate_string(
+                defn, field_name, field_class, raise_exception=True)
+
+            for target in ("label", "help_text",):
+                trans_text = trans_dict.get(target, None)
+                if trans_text:
+                    field_kwargs[target] = trans_text
+
+            trans_text = trans_dict.get("placeholder", None)
+            if trans_text:
+                field_kwargs["style"]["placeholder"] = trans_text
+
+            trans_choices = trans_dict.get("choices", None)
+            if trans_choices:
+                field_args[0] = trans_choices
 
             validators = _build_validators(defn)
             if validators:
@@ -317,54 +345,48 @@ def _defn_pre_checker(defn_data):
             _serializer_checker(defn)
 
 
-class BaseDefinableSerializer(rf_serializers.Serializer):
+class BaseDefinableSerializer(rf_serializers.Serializer, TranslationMixin):
 
-    def switch_to_language_str(self, **kwargs):
+    def trans_text(self, **kwargs):
         request = kwargs.get("context", {}).get("request", {})
         lang = getattr(request, "LANGUAGE_CODE", get_language())
 
         for field_defn in self.serializer_definition_data["fields"]:
-            field = self.fields[field_defn["name"]]
+            field_name = field_defn["name"]
+            field = self.fields[field_name]
+            field_class = field.__class__
 
-            # field_kwargs
+
+            trans_dict = self.__class__._get_translate_string(
+                field_defn, field_name, field_class, language=lang)
+
+            # label and help_text
             for target in ("label", "help_text",):
-                value = field_defn.get("field_kwargs", {}).get(target, None)
-                if isinstance(value, dict):
-                    value = value.get(lang, None)
-                    if value:
-                        setattr(field, target, value)
+                trans_text = trans_dict.get(target, None)
+                if trans_text:
+                    setattr(field, target, trans_text)
+
+            # initial
+            target = "initial"
+            trans_text = trans_dict.get(target, None)
+            if trans_text and issubclass(field_class, rf_serializers.CharField):
+                setattr(field, target, trans_text)
 
             # placeholder
-            value = field_defn.get("field_kwargs", {}).get("style", {}).get(
-                "placeholder", None)
-
-            if isinstance(value, dict):
-                value = value.get(lang, None)
-                if value:
-                    field.style["placeholder"] = value
+            target = "placeholder"
+            trans_text = trans_dict.get(target, None)
+            if trans_text:
+                field.style["placeholder"] = trans_text
 
             # choices
-            need_switch_language = all([
-                issubclass(field.__class__, rf_serializers.ChoiceField),
-                not issubclass(field.__class__, rf_serializers.FilePathField),
-                len(field_defn.get("field_args", []))
-            ])
+            trans_choices = trans_dict.get("choices", None)
+            if trans_choices:
+                field._set_choices(trans_choices)
 
-            if need_switch_language:
-                new_choice_list = list()
-                choice_list = field_defn["field_args"][0]
-                for i, choice in enumerate(choice_list):
-                    value, choice_label = choice[0], choice[1]
-                    if isinstance(choice_list[i][1], dict):
-                        trans_choice_label = choice_list[i][1].get(lang, None)
-                        if trans_choice_label:
-                            choice_label = trans_choice_label
-                    new_choice_list.append((value, choice_label))
-                field._set_choices(new_choice_list)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.switch_to_language_str(**kwargs)
+        self.trans_text(**kwargs)
 
 
 def build_serializer(defn_data, allow_validate_method=True):
