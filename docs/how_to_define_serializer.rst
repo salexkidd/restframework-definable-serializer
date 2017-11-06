@@ -282,12 +282,18 @@ definable-serializerではサードパーティパッケージ、つまりrestfr
 djangoは国際化機構を提供しているため、システム全体の翻訳を行うことが可能です。
 
 しかしこの機構はgettextを利用するため、コンパイルされた翻訳ファイルをサーバーにデプロイする必要があります。
-definable-serializerの目的はデプロイの手間を減らすことなので、残念ながらこの方法は利用できません。
+definable-serializerの目的はデプロイの手間を減らすことなので、残念ながらこの機構を利用するわけにはいきません。
 
-そのため ``label``, ``help_text``, ``choices`` にlocaleと翻訳テキストを対にした辞書を指定します。
-また各フィールドのstyle引数がplaceholderを持つ場合、翻訳の辞書を指定することができます。
+この問題を回避する方法として、localeと翻訳テキストを対にした辞書を翻訳が必要なフィールドに指定し、ユーザーのlocaleを元に翻訳テキストに切り替える方法を利用します。
+翻訳のテキストを指定出来るフィールドは引数中の以下の項目になります。
 
-指定された翻訳テキストはリクエストオブジェクトに含まれる ``request.LANGUAGE_CODE`` を元に取り出され、シリアライザークラスをオブジェクト化する際に利用されます。
+- ``choices`` 引数
+- ``label`` キーワード引数
+- ``help_text`` キーワード引数
+- ``initial`` キーワード引数
+- ``style`` キーワード引数中の ``placeholder`` キーワード引数
+
+指定された翻訳テキストは ``request.LANGUAGE_CODE`` 情報を元に取り出され、シリアライザークラスをオブジェクト化する際に適応されます。
 
 また、locale情報に対応するキーが存在しない場合は ``default`` キーにフォールバックするため、必ず指定する必要があります。
 
@@ -327,10 +333,25 @@ definable-serializerの目的はデプロイの手間を減らすことなので
           label:
             default: Favorite Animal
             ja: 好きな動物
+      - name: introduction_field
+        field: CharField
+        field_kwargs:
+          help_text:
+            default: Please input your introduction.
+            ja: 自己紹介を入力してください
+          label:
+            default: introduction
+            ja: 自己紹介
+          style:
+            base_templaet: textarea.html
+            rows: 5
+            placeholder:
+              default: Lorem ipsum dolor sit amet, consectetur...
+              ja: あのイーハトーヴォのすきとおった風、夏でも底に冷たさをもつ...
 
 
-国際化が正しく行われたかを確認するためには、ブラウザーのAccept-languageを変更する必要があります。
-もし、あなたがChromeを利用している場合は `Quick Language Switcher <https://chrome.google.com/webstore/detail/quick-language-switcher/pmjbhfmaphnpbehdanbjphdcniaelfie>`_ の利用をおすすめします。
+Browsable APIの画面を確認すると以下の様に翻訳が適応された状態で表示されます。
+
 
 .. figure:: imgs/transfer_ja.png
 
@@ -339,6 +360,12 @@ definable-serializerの目的はデプロイの手間を減らすことなので
 .. figure:: imgs/transfer_fallback.png
 
     ユーザーのlocaleが存在しなかった場合
+
+.. hint::
+
+    国際化が正しく行われたかを確認するためには、ブラウザーの ``Accept-Language`` を変更する必要があります。
+    もし、あなたがChromeを利用している場合は `Quick Language Switcher <https://chrome.google.com/webstore/detail/quick-language-switcher/pmjbhfmaphnpbehdanbjphdcniaelfie>`_ の利用をおすすめします。
+
 
 ------------------------------------------------------------------------------
 
