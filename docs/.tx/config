@@ -1,0 +1,59 @@
+[main]
+host = https://www.transifex.com
+type = PO
+
+[restframework-definable-serializer-documentation.example_project]
+file_filter = locale/<lang>/LC_MESSAGES/example_project.po
+source_file = _build/locale/example_project.pot
+source_lang = en
+
+[restframework-definable-serializer-documentation.extend_model_class]
+file_filter = locale/<lang>/LC_MESSAGES/extend_model_class.po
+source_file = _build/locale/extend_model_class.pot
+source_lang = en
+
+[restframework-definable-serializer-documentation.extend_modeladmin_class]
+file_filter = locale/<lang>/LC_MESSAGES/extend_modeladmin_class.po
+source_file = _build/locale/extend_modeladmin_class.pot
+source_lang = en
+
+[restframework-definable-serializer-documentation.extra_serializer_fields]
+file_filter = locale/<lang>/LC_MESSAGES/extra_serializer_fields.po
+source_file = _build/locale/extra_serializer_fields.pot
+source_lang = en
+
+[restframework-definable-serializer-documentation.first]
+file_filter = locale/<lang>/LC_MESSAGES/first.po
+source_file = _build/locale/first.pot
+source_lang = en
+
+[restframework-definable-serializer-documentation.how_to_define_serializer]
+file_filter = locale/<lang>/LC_MESSAGES/how_to_define_serializer.po
+source_file = _build/locale/how_to_define_serializer.pot
+source_lang = en
+
+[restframework-definable-serializer-documentation.index]
+file_filter = locale/<lang>/LC_MESSAGES/index.po
+source_file = _build/locale/index.pot
+source_lang = en
+
+[restframework-definable-serializer-documentation.install]
+file_filter = locale/<lang>/LC_MESSAGES/install.po
+source_file = _build/locale/install.pot
+source_lang = en
+
+[restframework-definable-serializer-documentation.misc]
+file_filter = locale/<lang>/LC_MESSAGES/misc.po
+source_file = _build/locale/misc.pot
+source_lang = en
+
+[restframework-definable-serializer-documentation.model_fields]
+file_filter = locale/<lang>/LC_MESSAGES/model_fields.po
+source_file = _build/locale/model_fields.pot
+source_lang = en
+
+[restframework-definable-serializer-documentation.utility_functions]
+file_filter = locale/<lang>/LC_MESSAGES/utility_functions.po
+source_file = _build/locale/utility_functions.pot
+source_lang = en
+
