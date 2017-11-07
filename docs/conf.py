@@ -27,6 +27,7 @@ sys.path.insert(0, os.path.abspath('..'))
 os.environ['DJANGO_SETTINGS_MODULE'] = 'tests.settings'
 django.setup()
 
+import definable_serializer
 
 # -- General configuration ------------------------------------------------
 
@@ -65,7 +66,7 @@ author = 'salexkidd'
 # built documents.
 #
 # The short X.Y version.
-version = '0.1.12'
+version = definable_serializer.__VERSION__
 # The full version, including alpha/beta/rc tags.
 release = 'beta'
 

@@ -1,4 +1,5 @@
 from setuptools import setup, find_packages
+import definable_serializer
 
 try:
     with open("README.md") as f:
@@ -15,13 +16,17 @@ setup(
     description='restframework-definable-serializer',
     long_description=long_description,
     keywords = ["django", "restframework", "serializer"],
-    version='0.1.12',
-    packages=find_packages(),
+    version=definable_serializer.__VERSION__,
+    packages=find_packages(
+        exclude=[
+            "*.tests", "*.tests.*", "tests.*", "tests",
+        ]
+    ),
     package_data={
         'definable_serializer': [
             'templates/admin/definable_serializer/*.html',
+            'LICENSE'
         ]},
-
     license="MIT",
     install_requires=[
         "django-codemirror2>=0.2",
