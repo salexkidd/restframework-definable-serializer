@@ -1,0 +1,9 @@
+[
+  {
+    "model": "for_test.paper",
+    "pk": 1,
+    "fields": {
+      "definition": "main:\n  name: PersonSerializerByYAML\n  fields:\n  - name: first_name\n    field: CharField\n  - name: last_name\n    field: CharField\n  - name: age\n    field: IntegerField\n  - name: email\n    field: EmailField\n  - name: sex\n    field: definable_serializer.extra_fields.RadioField\n    field_args:\n    - - - male\n        - Male\n      - - other\n        - Other\n      - - female\n        - Female\n    field_kwargs:\n      allow_blank: false\n      allow_null: false\n      initial: other\n      inline: true\n  - name: type\n    field: definable_serializer.extra_fields.ChoiceRequiredField\n    field_args:\n    - - - \n        - '--------------'\n      - - family\n        - Family\n      - - friend\n        - Friend\n      - - other\n        - Other\n    field_kwargs:\n      allow_blank: false\n      allow_null: false\n  - name: memo\n    field: CharField\n    field_kwargs:\n      required: false\n      max_length: 100\n      style:\n        base_template: textarea.html\n        rows: 5\n        placeholder: Hello everyone!\n"
+  }
+}
+]

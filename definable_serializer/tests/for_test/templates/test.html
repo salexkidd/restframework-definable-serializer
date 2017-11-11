@@ -1,0 +1,8 @@
+{% load rest_framework %}
+{% block "content" %}
+<form action="./" method="POST">
+    {% csrf_token %}
+    {% render_form serializer %}
+    <input type="submit" value="post" class="btn btn-block btn-lg btn-success">
+</form>
+{% endblock %}

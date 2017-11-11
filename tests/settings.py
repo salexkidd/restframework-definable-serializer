@@ -3,7 +3,11 @@ INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
+    'django.contrib.staticfiles',
+    'rest_framework',
     'definable_serializer',
+    'definable_serializer.tests.for_test',
+    'drf_openapi',
 )
 
 DATABASES = {
@@ -28,13 +32,44 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'django.template.context_processors.static',
-                'django_settings_contextprocessor.context_processors.settings_module_name',
-                'django_settings_contextprocessor.context_processors.django_debug_flg',
-                'django_settings_contextprocessor.context_processors.djagno_settings_data',
-                'django_projectname.context_processors.project_name',
-                'apps.systemsettings.context_processors.other_system_token',
-                'apps.systemsettings.context_processors.sales_tax_data',
             ],
         },
     },
 ]
+
+STATIC_URL = '/static/'
+
+REST_FRAMEWORK = {
+    'DEFAULT_VERSIONING_CLASS': 'rest_framework.versioning.AcceptHeaderVersioning',
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.TokenAuthentication'
+    ),
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.TemplateHTMLRenderer',
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.SchemaJSRenderer',
+        'rest_framework.renderers.CoreJSONRenderer',
+        'rest_framework.renderers.DocumentationRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
+        'definable_serializer.renderers.CoreJSONSerializerPerObjectRenderer',
+        'definable_serializer.renderers.OpenAPISerializerPerObjectSchemaRenderer',
+        'definable_serializer.renderers.SwaggerUISerializerPerObjectRenderer',
+
+    ),
+}
+
+SWAGGER_SETTINGS = {
+    'USE_SESSION_AUTH': True,
+    'SECURITY_DEFINITIONS': {
+        "api_key": {
+            "type": "apiKey",
+            "name": "Authorization Token ******",
+            "in": "header"
+        },
+
+    },
+}
