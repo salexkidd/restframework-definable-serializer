@@ -4,7 +4,7 @@ from rest_framework.routers import (
 )
 
 
-class SerializerPerObjectRouter(DefaultRouter):
+class PickupSerializerRouter(DefaultRouter):
     routes = [
         Route(
             url=r'^{prefix}/{lookup_serializer}{trailing_slash}$',
@@ -41,7 +41,7 @@ class SerializerPerObjectRouter(DefaultRouter):
                     prefix=prefix,
                     lookup=lookup,
                     trailing_slash=self.trailing_slash,
-                    lookup_serializer=r'(?P<lookup_serializser>.+)',
+                    lookup_serializer=r'(?P<pickup_serializer>.+)',
                 )
 
                 if not prefix and regex[:2] == '^/':

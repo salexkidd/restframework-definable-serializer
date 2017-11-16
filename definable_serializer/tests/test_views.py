@@ -19,7 +19,7 @@ class TestShowSerializerInfo(TestCase):
     ...
 
 
-class TestSerializerPerObjectGenericView(TestCase):
+class TestPickupGenericView(TestCase):
 
     fixtures = ["test_fixture.json"]
     view_name = "for_test:answer"
@@ -45,7 +45,7 @@ class TestSerializerPerObjectGenericView(TestCase):
     def get_url(self, request_format):
         url = reverse(
             "{}-detail".format(self.view_name),
-            kwargs={'lookup_serializser': 1}
+            kwargs={'pickup_serializer': 1}
         )
         return url + "?format={}".format(request_format)
 
@@ -166,10 +166,10 @@ class TestSerializerPerObjectGenericView(TestCase):
         self.response_test(response, test_data)
 
     def test_corejson_serializer_per_object(self):
-        request_format = "corejson-serializer-per-object"
+        request_format = "corejson-pickup-serializer"
         url = self.get_url(request_format)
         test_data = {
-            "renderer_class_name": "CoreJSONSerializerPerObjectRenderer",
+            "renderer_class_name": "CoreJSONPickupSerializerRenderer",
             "correct_contents": [
                 '"create":{"_type":"link","url":"/for_test_app/answer/1/"',
                 '"action":"post","encoding":"application/json"',
@@ -180,12 +180,12 @@ class TestSerializerPerObjectGenericView(TestCase):
         self.response_test(response, test_data)
 
     def test_open_api_serializer_per_object_schema(self):
-        request_format = "openapi-serializer-per-object-schema"
+        request_format = "openapi-pickup-serializer-schema"
         url = self.get_url(request_format)
         test_data = {
-            "renderer_class_name": "OpenAPISerializerPerObjectSchemaRenderer",
+            "renderer_class_name": "OpenAPIPickupSerializerSchemaRenderer",
             "correct_contents": [
-                '{"swagger": "2.0", "info": {"title": "AnswerViewSet API",'
+                '{"swagger": "2.0", "info": {"title": "answer_view_set API",'
             ],
             "response_status": http_status.HTTP_404_NOT_FOUND
         }
@@ -193,14 +193,14 @@ class TestSerializerPerObjectGenericView(TestCase):
         self.response_test(response, test_data)
 
     def test_swagger_ui_serializer_per_object(self):
-        request_format = "swagger-serializer-per-object"
+        request_format = "swagger-pickup-serializer"
         url = self.get_url(request_format)
         test_data = {
-            "renderer_class_name": "SwaggerUISerializerPerObjectRenderer",
+            "renderer_class_name": "SwaggerUIPickupSerializerRenderer",
             "correct_contents": [
                 '<!DOCTYPE html>\n<html>\n<head>\n',
-                '<redoc spec-url=\'/for_test_app/answer/1/?format=openapi\'></redoc>\n',
-                '<script src="https://rebilly.github.io/ReDoc/releases/latest/redoc.min.js">',
+                '<redoc spec-url=\'/for_test_app/answer/1/?format=openapi\'>',
+                'https://rebilly.github.io/ReDoc/releases/latest/redoc.min.js',
             ],
             "response_status": http_status.HTTP_404_NOT_FOUND
         }

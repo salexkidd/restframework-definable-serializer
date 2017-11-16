@@ -55,10 +55,19 @@ class ShowSerializerInfo(CreateAPIView):
         return Response(data=serializer.data)
 
 
-class SerializerPerObjectGenericView(GenericAPIView):
+class PickupSerializerGenericView(GenericAPIView):
     serializer_queryset = None
     serializer_field_name = None
     raise_not_found_when_templatehtml_render = False
+
+    api_version = None
+    api_name = None
+
+    def get_api_name(self):
+        return self.api_name
+
+    def get_version(self):
+        return self.api_version
 
     def get_queryset_for_serializer(self):
         return self.serializer_queryset
@@ -72,7 +81,7 @@ class SerializerPerObjectGenericView(GenericAPIView):
     def get_object(self):
         queryset = self.filter_queryset(self.get_queryset())
         lookup_url_kwarg = self.lookup_url_kwarg or self.lookup_field
-        filter_kwargs = {self.lookup_field: self.kwargs["lookup_serializser"]}
+        filter_kwargs = {self.lookup_field: self.kwargs["pickup_serializer"]}
         filter_kwargs.update(self.get_unique_key_data())
 
         obj = get_object_or_404(queryset, **filter_kwargs)
@@ -82,10 +91,15 @@ class SerializerPerObjectGenericView(GenericAPIView):
 
     def get_serializer_define_object(self):
         filer_key = self.lookup_field.split("__")[-1]
-        filter_kwargs = {filer_key: self.kwargs["lookup_serializser"]}
+        filter_kwargs = {filer_key: self.kwargs["pickup_serializer"]}
 
-        return get_object_or_404(
+        obj = get_object_or_404(
             self.get_queryset_for_serializer(), **filter_kwargs)
+
+        # TODO: Permission check
+        ...
+
+        return obj
 
     def get_serializer_class(self):
         obj = self.get_serializer_define_object()
@@ -95,6 +109,6 @@ class SerializerPerObjectGenericView(GenericAPIView):
         return get_serializer_func()
 
 
-class SerializerPerObjectGenericViewSet(viewsets.ViewSetMixin,
-                                        SerializerPerObjectGenericView):
+class PickupSerializerGenericViewSet(viewsets.ViewSetMixin,
+                                     PickupSerializerGenericView):
     ...

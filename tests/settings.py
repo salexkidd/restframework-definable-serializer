@@ -55,9 +55,9 @@ REST_FRAMEWORK = {
         'rest_framework.renderers.CoreJSONRenderer',
         'rest_framework.renderers.DocumentationRenderer',
         'rest_framework.renderers.BrowsableAPIRenderer',
-        'definable_serializer.renderers.CoreJSONSerializerPerObjectRenderer',
-        'definable_serializer.renderers.OpenAPISerializerPerObjectSchemaRenderer',
-        'definable_serializer.renderers.SwaggerUISerializerPerObjectRenderer',
+        'definable_serializer.renderers.CoreJSONPickupSerializerRenderer',
+        'definable_serializer.renderers.OpenAPIPickupSerializerSchemaRenderer',
+        'definable_serializer.renderers.SwaggerUIPickupSerializerRenderer',
     ),
 }
 

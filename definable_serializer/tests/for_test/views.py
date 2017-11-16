@@ -4,8 +4,8 @@ from rest_framework.exceptions import NotFound
 
 from . import models as for_test_models
 from definable_serializer.views import (
-    SerializerPerObjectGenericView,
-    SerializerPerObjectGenericViewSet
+    PickupSerializerGenericView,
+    PickupSerializerGenericViewSet
 )
 
 from rest_framework import mixins as rf_mixins
@@ -16,7 +16,7 @@ class AnswerViewSet(rf_mixins.CreateModelMixin,
                     rf_mixins.UpdateModelMixin,
                     rf_mixins.ListModelMixin,
                     rf_mixins.DestroyModelMixin,
-                    SerializerPerObjectGenericViewSet):
+                    PickupSerializerGenericViewSet):
 
     template_name = "test.html"
     lookup_field = "paper__pk"
