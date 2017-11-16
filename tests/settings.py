@@ -5,9 +5,9 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.staticfiles',
     'rest_framework',
+    'drf_openapi',
     'definable_serializer',
     'definable_serializer.tests.for_test',
-    'drf_openapi',
 )
 
 DATABASES = {

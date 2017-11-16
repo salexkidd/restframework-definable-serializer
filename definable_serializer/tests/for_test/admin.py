@@ -1,6 +1,6 @@
-from . import models as for_test_models
-
 from django.contrib import admin
+
+from . import models as for_test_models
 
 
 admin.register(for_test_models.Paper)

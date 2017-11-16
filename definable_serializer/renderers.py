@@ -69,7 +69,7 @@ class OpenAPISerializerPerObjectSchemaRenderer(OpenAPIDocsMixin, OpenAPIRenderer
         return OpenAPICodec().encode(docs, extra=extra)
 
 
-class SwaggerUISerializerPerObjectRenderer(OpenAPIDocsMixin, SwaggerUIRenderer):
+class SwaggerUISerializerPerObjectRenderer(SwaggerUIRenderer):
     template = 'swagger_ui_serializer_per_object.html'
     media_type = 'application/swagger-serializer-per-object+json'
     format = 'swagger-serializer-per-object'

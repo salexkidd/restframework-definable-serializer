@@ -6,7 +6,6 @@ try:
 except ModuleNotFoundError as e:
     from django.core.urlresolvers import reverse
 
-
 from rest_framework import status as http_status
 from rest_framework.test import (
     APIRequestFactory, force_authenticate, APIClient
@@ -134,7 +133,8 @@ class TestSerializerPerObjectGenericView(TestCase):
             "renderer_class_name": "BrowsableAPIRenderer",
             "correct_contents": [
                 '<input name="email" class="form-control" type="email"',
-                '<form action="/for_test_app/answer/1/?format=api" method="POST" enctype="multipart/form-data"',
+                '<form action="/for_test_app/answer/1/?format=api"',
+                'method="POST" enctype="multipart/form-data"',
             ],
             "response_status": http_status.HTTP_404_NOT_FOUND
         }
@@ -152,7 +152,6 @@ class TestSerializerPerObjectGenericView(TestCase):
         }
         response = self.client.get(url)
         self.response_test(response, test_data)
-
 
     def test_access_html(self):
         request_format = "html"
@@ -172,7 +171,8 @@ class TestSerializerPerObjectGenericView(TestCase):
         test_data = {
             "renderer_class_name": "CoreJSONSerializerPerObjectRenderer",
             "correct_contents": [
-                '"create":{"_type":"link","url":"/for_test_app/answer/1/","action":"post","encoding":"application/json"',
+                '"create":{"_type":"link","url":"/for_test_app/answer/1/"',
+                '"action":"post","encoding":"application/json"',
             ],
             "response_status": http_status.HTTP_404_NOT_FOUND
         }
@@ -199,7 +199,8 @@ class TestSerializerPerObjectGenericView(TestCase):
             "renderer_class_name": "SwaggerUISerializerPerObjectRenderer",
             "correct_contents": [
                 '<!DOCTYPE html>\n<html>\n<head>\n',
-                '<redoc spec-url=\'/for_test_app/answer/1/?format=openapi\'></redoc>\n    <script src="https://rebilly.github.io/ReDoc/releases/latest/redoc.min.js">',
+                '<redoc spec-url=\'/for_test_app/answer/1/?format=openapi\'></redoc>\n',
+                '<script src="https://rebilly.github.io/ReDoc/releases/latest/redoc.min.js">',
             ],
             "response_status": http_status.HTTP_404_NOT_FOUND
         }

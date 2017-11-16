@@ -21,9 +21,6 @@ class ShowSerializerInfo(CreateAPIView):
         self._url_data = resolve(self.request.path)
         self._serializer_model = self._get_serializer_model()
 
-    def get(self, *args, **kwargs):
-        return "Hello"
-
     def _get_serializer_model(self):
         app_label, model_name, view_name = self._url_data.url_name.split("_")
         content = ContentType.objects.get(app_label=app_label, model=model_name)
