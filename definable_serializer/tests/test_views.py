@@ -1,7 +1,11 @@
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
 from django.test import TestCase
-from django.urls import reverse
+try:
+    from django.urls import reverse
+except ModuleNotFoundError as e:
+    from django.core.urlresolvers import reverse
+
 
 from rest_framework import status as http_status
 from rest_framework.test import (
