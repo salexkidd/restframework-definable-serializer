@@ -6,37 +6,27 @@ from rest_framework_swagger.renderers import (
 )
 
 import coreapi
-from drf_openapi.codec import SwaggerUIRenderer
-from drf_openapi.entities import (
-    OpenApiSchemaGenerator, OpenApiDocument,
-)
-from drf_openapi.codec import OpenAPIRenderer
+
+from drf_openapi.codec import SwaggerUIRenderer, OpenAPIRenderer
+from drf_openapi.entities import OpenApiSchemaGenerator, OpenApiDocument
+
 
 DEFAULT_NO_VERSION_STRING = "no-versioning"
 
-_METHOD_MAPPING = {
-    "GET": "retrieve",
-    "POST": "create",
-    "PUT": "update",
-    "PATCH": "update",
-}
-
 
 class OpenAPIDocsMixin(object):
+
     def get_openapi_docs(self, data, media_type=None, renderer_context=None):
         request = renderer_context.get("request", None)
+
         view = renderer_context.get("view", None)
-
-        schema_gen = OpenApiSchemaGenerator(
-            version=DEFAULT_NO_VERSION_STRING)
-
-        content_dict = dict()
-        for method in view.allowed_methods:
-            if method in _METHOD_MAPPING.keys():
-                content_dict[_METHOD_MAPPING[method]] = schema_gen.get_link(
-                    request.path, method, view)
-
         view_class_name = view.__class__.__name__
+
+        schema_gen = OpenApiSchemaGenerator(version=DEFAULT_NO_VERSION_STRING)
+        content_dict = {
+            action: schema_gen.get_link(request.path, method.upper(), view)
+                for method, action in view.action_map.items()}
+
         return OpenApiDocument(
             title="{} API".format(view_class_name),
             description=view.__doc__,
@@ -46,7 +36,9 @@ class OpenAPIDocsMixin(object):
         )
 
 
-class CoreJSONSerializerPerObjectRenderer(OpenAPIDocsMixin, CoreJSONRenderer):
+class CoreJSONSerializerPerObjectRenderer(OpenAPIDocsMixin,
+                                          CoreJSONRenderer):
+
     media_type = 'application/coreapi-serializer-per-object+json'
     format = 'corejson-serializer-per-object'
 
@@ -58,7 +50,9 @@ class CoreJSONSerializerPerObjectRenderer(OpenAPIDocsMixin, CoreJSONRenderer):
         return codec.dump(docs, indent=indent)
 
 
-class OpenAPISerializerPerObjectSchemaRenderer(OpenAPIDocsMixin, OpenAPIRenderer):
+class OpenAPISerializerPerObjectSchemaRenderer(OpenAPIDocsMixin,
+                                               OpenAPIRenderer):
+
     media_type = 'application/openapi-serializer-per-object-schema+json'
     format = 'openapi-serializer-per-object-schema'
 
@@ -70,6 +64,7 @@ class OpenAPISerializerPerObjectSchemaRenderer(OpenAPIDocsMixin, OpenAPIRenderer
 
 
 class SwaggerUISerializerPerObjectRenderer(SwaggerUIRenderer):
+
     template = 'swagger_ui_serializer_per_object.html'
     media_type = 'application/swagger-serializer-per-object+json'
     format = 'swagger-serializer-per-object'

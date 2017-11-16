@@ -58,7 +58,6 @@ REST_FRAMEWORK = {
         'definable_serializer.renderers.CoreJSONSerializerPerObjectRenderer',
         'definable_serializer.renderers.OpenAPISerializerPerObjectSchemaRenderer',
         'definable_serializer.renderers.SwaggerUISerializerPerObjectRenderer',
-
     ),
 }
 
@@ -70,6 +69,5 @@ SWAGGER_SETTINGS = {
             "name": "Authorization Token ******",
             "in": "header"
         },
-
     },
 }
