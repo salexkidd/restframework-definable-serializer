@@ -44,3 +44,4 @@ class Answer(models.Model):
 
     class Meta:
         unique_together = ("paper", "respondent",)
+        ordering = ("id",)

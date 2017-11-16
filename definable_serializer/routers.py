@@ -7,6 +7,14 @@ from rest_framework.routers import (
 class PickupSerializerRouter(DefaultRouter):
     routes = [
         Route(
+            url=r'^{prefix}{trailing_slash}$',
+            mapping={
+                'get': 'list',
+            },
+            name='{basename}-list',
+            initkwargs={'suffix': 'List'}
+        ),
+        Route(
             url=r'^{prefix}/{lookup_serializer}{trailing_slash}$',
             mapping={
                 'get': 'retrieve',

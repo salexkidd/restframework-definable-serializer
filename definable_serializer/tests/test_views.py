@@ -14,12 +14,14 @@ from rest_framework.test import (
 from ..tests.for_test import models as for_test_models
 from copy import deepcopy
 
+from definable_serializer.tests.for_test import models as for_test_models
+
 
 class TestShowSerializerInfo(TestCase):
     ...
 
 
-class TestPickupGenericView(TestCase):
+class TestPickupSerializer(TestCase):
 
     fixtures = ["test_fixture.json"]
     view_name = "for_test:answer"
@@ -35,10 +37,17 @@ class TestPickupGenericView(TestCase):
 
     def setUp(self, *args, **kwargs):
         self.user = get_user_model().objects.create_user(
-            username='admin',
-            email='admin@example.com',
+            username='one',
+            email='one@example.com',
             password='top_secret'
         )
+
+        self.user_two = get_user_model().objects.create_user(
+            username='two',
+            email='two@example.com',
+            password='top_secret'
+        )
+
         self.client = APIClient()
         self.client.force_authenticate(user=self.user)
 
@@ -206,3 +215,52 @@ class TestPickupGenericView(TestCase):
         }
         response = self.client.get(url)
         self.response_test(response, test_data)
+
+    def test_list(self):
+        # TODO: jsonじゃないとずっこけて死ぬのでテストする
+        request_format = "json"
+        url = reverse(
+            "{}-list".format(self.view_name)
+        ) + "?format={}".format(request_format)
+        response = self.client.get(url)
+
+        self.assertEqual(response.json()["count"], 0)
+
+        paper = for_test_models.Paper.objects.get(pk=1)
+
+        # create 2 ~ 11 object
+        for i in range(2, 22):
+            paper.id = None
+            paper.save()
+            for_test_models.Answer.objects.create(
+                respondent=self.user,
+                paper=paper,
+                data=self.test_answer_data,
+            )
+
+        # and for user_two
+        for_test_models.Answer.objects.create(
+            respondent=self.user_two,
+            paper=paper,
+            data=self.test_answer_data,
+        )
+
+        # user one
+        response = self.client.get(url)
+        self.assertEqual(response.json()["count"], 20)
+        self.assertEqual(
+            response.json()["results"][0]["respondent"],
+            {'id': 1, 'username': 'one', 'email': 'one@example.com'}
+        )
+
+        # user two
+        self.client.force_authenticate(user=self.user_two)
+        response = self.client.get(url)
+        self.assertEqual(response.json()["count"], 1)
+        self.assertEqual(
+            response.json()["results"][0]["respondent"],
+            {'id': 2, 'username': 'two', 'email': 'two@example.com'}
+        )
+
+        # paper serializers
+        self.assertIn("definition", response.json()["results"][0]["paper"])
