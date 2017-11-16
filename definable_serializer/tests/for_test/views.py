@@ -67,11 +67,6 @@ class AnswerViewSet(rf_mixins.CreateModelMixin,
 
         return Response(serializer.data)
 
-    # #################### TODO: Mixin作らないとだめ ######################
-    # def perform_destroy(self, instance):
-    #     instance.delete()
-
-
     def perform_update(self, serializer):
         instance = self.get_object()
         instance.__dict__[self.store_data_field_name] = serializer.validated_data
