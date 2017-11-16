@@ -11,32 +11,6 @@ from definable_serializer.views import (
 from rest_framework import mixins as rf_mixins
 
 
-class Answer(SerializerPerObjectGenericView):
-    template_name = "test.html"
-    lookup_field = "paper__pk"
-    queryset = for_test_models.Answer.objects.all()
-
-    serializer_queryset = for_test_models.Paper.objects.all()
-    serializer_field_name = "definition"
-
-    def get_unique_key_data(self):
-        return {"respondent": self.request.user}
-
-    def get(self, *args, **kwargs):
-        obj = self.get_object()
-        serializer = self.get_serializer(instance=obj)
-        accepted_renderer = self.request.accepted_renderer
-        if isinstance(accepted_renderer, TemplateHTMLRenderer):
-            response = Response({
-                'serializer': serializer, 'obj': obj})
-        else:
-            if not obj:
-                raise NotFound()
-            response = Response(serializer.data)
-
-        return response
-
-
 class AnswerViewSet(rf_mixins.CreateModelMixin,
                     rf_mixins.RetrieveModelMixin,
                     rf_mixins.UpdateModelMixin,
