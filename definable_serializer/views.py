@@ -58,7 +58,7 @@ class ShowSerializerInfo(CreateAPIView):
 class PickupSerializerGenericView(GenericAPIView):
     serializer_queryset = None
     serializer_field_name = None
-    raise_not_found_when_templatehtml_render = False
+    data_store_field_name = None
 
     api_version = None
     api_name = None
@@ -69,10 +69,6 @@ class PickupSerializerGenericView(GenericAPIView):
     def get_version(self):
         return self.api_version
 
-    def get_queryset(self, *args, **kwargs):
-        queryset = super().get_queryset(*args, **kwargs)
-        return queryset.filter(**self.get_unique_key_data())
-
     def get_queryset_for_serializer(self):
         return self.serializer_queryset
 
@@ -80,7 +76,7 @@ class PickupSerializerGenericView(GenericAPIView):
         return self.serializer_field_name
 
     def get_unique_key_data(self):
-        raise NotImplemented("Please set unique_key_data")
+        raise NotImplemented()
 
     def get_object(self):
         queryset = self.filter_queryset(self.get_queryset())

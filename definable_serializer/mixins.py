@@ -9,7 +9,7 @@ class CreatePickupSerializerMixin(mixins.CreateModelMixin):
         self.get_queryset().model.objects.create(
             respondent=self.request.user,
             paper=self.get_serializer_define_object(),
-            **{self.store_data_field_name: serializer.validated_data}
+            **{self.data_store_field_name: serializer.validated_data}
         )
 
 
@@ -17,7 +17,7 @@ class RetrievePickupSerializerMixin(mixins.RetrieveModelMixin):
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
         serializer = self.get_serializer(
-            getattr(instance, self.store_data_field_name)
+            getattr(instance, self.data_store_field_name)
         )
         return Response(serializer.data)
 
@@ -44,7 +44,7 @@ class UpdatePickupSerializerMixin(mixins.UpdateModelMixin):
 
     def perform_update(self, serializer):
         instance = self.get_object()
-        instance.__dict__[self.store_data_field_name] = serializer.validated_data
+        instance.__dict__[self.data_store_field_name] = serializer.validated_data
         instance.save()
 
 

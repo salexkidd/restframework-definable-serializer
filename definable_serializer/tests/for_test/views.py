@@ -26,10 +26,14 @@ class AnswerViewSet(PickupSerializerViewSet):
 
     serializer_queryset = for_test_models.Paper.objects.all()
     serializer_field_name = "definition"
-    store_data_field_name = "data"
+    data_store_field_name = "data"
 
     def get_unique_key_data(self):
         return {"respondent": self.request.user}
+
+    def get_queryset(self, *args, **kwargs):
+        return super().get_queryset(
+            *args, **kwargs).filter(respondent=self.request.user)
 
     def serializer_class_for_list(self):
         class Respondent(serializers.ModelSerializer):
@@ -42,6 +46,7 @@ class AnswerViewSet(PickupSerializerViewSet):
             class Meta:
                 model = for_test_models.Paper
                 fields = '__all__'
+
 
         class SerializerForList(serializers.ModelSerializer):
             paper = PaperSerializer()
