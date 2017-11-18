@@ -18,12 +18,13 @@ class ShowSerializerInfo(CreateAPIView):
 
     def initial(self, request, *args, **kwargs):
         super().initial(request, *args, **kwargs)
-        self._url_data = resolve(self.request.path)
         self._serializer_model = self._get_serializer_model()
 
     def _get_serializer_model(self):
-        app_label, model_name, view_name = self._url_data.url_name.split("_")
-        content = ContentType.objects.get(app_label=app_label, model=model_name)
+        content = ContentType.objects.get(
+            app_label=self.kwargs["app_label"],
+            model=self.kwargs["model_name"]
+        )
         return content.model_class()
 
     def get_object(self, *args, **kwargs):
@@ -34,12 +35,13 @@ class ShowSerializerInfo(CreateAPIView):
 
     def get_serializer_class(self, *args, **kwargs):
         try:
-            field_name = self._url_data.kwargs["field_name"]
-            pk = self._url_data.kwargs["pk"]
+            field_name = self.kwargs["field_name"]
+            pk = self.kwargs["pk"]
             instance = self._serializer_model.objects.get(pk=pk)
             func_name = "get_{}_serializer_class".format(
-                self._url_data.kwargs["field_name"])
+                self.kwargs["field_name"])
             serializer_class = kls = getattr(instance, func_name)()
+
         except Exception as e:
             serializer_class = serializers.Serializer
 

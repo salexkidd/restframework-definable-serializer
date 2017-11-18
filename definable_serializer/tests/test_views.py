@@ -17,11 +17,94 @@ from copy import deepcopy
 from definable_serializer.tests.for_test import models as for_test_models
 
 
-class TestShowSerializerInfo(TestCase):
-    ...
+class BaseViewTest(TestCase):
+    def response_test(self, response, test_data):
+        content_str = response.content.decode("utf-8")
+        self.assertEqual(response.status_code, test_data["response_status"])
+
+        if test_data["renderer_class_name"]:
+            self.assertEqual(
+                response.accepted_renderer.__class__.__name__,
+                test_data["renderer_class_name"]
+            )
+
+        for correct_str in test_data["correct_contents"]:
+
+            if correct_str not in content_str:
+                print(correct_str)
+                import ipdb; ipdb.set_trace()
+
+            self.assertTrue(correct_str in content_str)
+
+class TestAdminDetail(BaseViewTest):
+    fixtures = ["test_fixture.json"]
+
+    def setUp(self, *args, **kwargs):
+        self.user = get_user_model().objects.create_user(
+            username='one',
+            email='one@example.com',
+            password='top_secret',
+            is_superuser=True,
+            is_staff=True,
+        )
+        self.client = APIClient()
+        self.client.login(username="one", password="top_secret")
+
+    def test_access(self):
+        url = reverse(
+            "admin:for_test_paper_change",
+            args=(1,)
+        )
+        response = self.client.get(url, follow=True)
+        test_data = {
+            "renderer_class_name": None,
+            "correct_contents": [
+                'Show Restframework Browsable Page',
+                'email = EmailField()',
+            ],
+            "response_status": http_status.HTTP_200_OK
+        }
+        self.response_test(response, test_data)
 
 
-class TestPickupSerializer(TestCase):
+class TestShowSerializerInfo(BaseViewTest):
+    fixtures = ["test_fixture.json"]
+
+    def setUp(self, *args, **kwargs):
+        self.user = get_user_model().objects.create_user(
+            username='one',
+            email='one@example.com',
+            password='top_secret',
+            is_superuser=True,
+            is_staff=True,
+        )
+
+        self.client = APIClient()
+        self.client.login(username="one", password="top_secret")
+
+    def test_access(self):
+        url = reverse(
+            "admin:show-browsable-api-view",
+            kwargs={
+                "pk": 1,
+                "field_name": "definition",
+                "app_label": "for_test",
+                "model_name": "answer",
+            }
+        ) + "?format=api"
+
+        response = self.client.get(url, follow=True)
+        test_data = {
+            "renderer_class_name": "BrowsableAPIRenderer",
+            "correct_contents": [
+                'Django REST framework</title>',
+                'Make a GET request on the Show Serializer Info resource with the format set to `api`',
+            ],
+            "response_status": http_status.HTTP_200_OK
+        }
+        self.response_test(response, test_data)
+
+class TestPickupSerializer(BaseViewTest):
 
     fixtures = ["test_fixture.json"]
     view_name = "for_test:answer"
@@ -57,16 +140,6 @@ class TestPickupSerializer(TestCase):
             kwargs={'pickup_serializer': 1}
         )
         return url + "?format={}".format(request_format)
-
-    def response_test(self, response, test_data):
-        content_str = response.content.decode("utf-8")
-        self.assertEqual(response.status_code, test_data["response_status"])
-        self.assertEqual(
-            response.accepted_renderer.__class__.__name__,
-            test_data["renderer_class_name"]
-        )
-        for correct_str in test_data["correct_contents"]:
-            self.assertTrue(correct_str in content_str)
 
     def test_access_json_format(self):
         request_format = "json"
@@ -208,8 +281,7 @@ class TestPickupSerializer(TestCase):
             "renderer_class_name": "SwaggerUIPickupSerializerRenderer",
             "correct_contents": [
                 '<!DOCTYPE html>\n<html>\n<head>\n',
-                '<redoc spec-url=\'/for_test_app/answer/1/?format=openapi\'>',
-                'https://rebilly.github.io/ReDoc/releases/latest/redoc.min.js',
+                "<redoc spec-url=\'/for_test_app/answer/1/?format=openapi-pickup-serializer-schema\'>"
             ],
             "response_status": http_status.HTTP_404_NOT_FOUND
         }

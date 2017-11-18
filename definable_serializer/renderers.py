@@ -71,7 +71,5 @@ class OpenAPIPickupSerializerSchemaRenderer(OpenAPIDocMixin, OpenAPIRenderer):
 
 
 class SwaggerUIPickupSerializerRenderer(SwaggerUIRenderer):
-
     template = 'swagger_ui_serializer_per_object.html'
-    media_type = 'application/swagger-pickup-serializer+json'
     format = 'swagger-pickup-serializer'

@@ -12,12 +12,6 @@ from definable_serializer.viewsets import (
     PickupSerializerViewSet,
 )
 
-from definable_serializer.mixins import (
-    CreatePickupSerializerMixin,
-    RetrievePickupSerializerMixin,
-    UpdatePickupSerializerMixin,
-)
-
 
 class AnswerViewSet(PickupSerializerViewSet):
     template_name = "test.html"
@@ -57,3 +51,11 @@ class AnswerViewSet(PickupSerializerViewSet):
                 fields = '__all__'
 
         return SerializerForList
+
+    def perform_create(self, serializer):
+        self.get_serializer_define_object()
+        self.get_queryset().model.objects.create(
+            respondent=self.request.user,
+            paper=self.get_serializer_define_object(),
+            **{self.data_store_field_name: serializer.validated_data}
+        )

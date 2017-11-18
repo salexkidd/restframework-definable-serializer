@@ -5,12 +5,7 @@ from rest_framework import mixins
 
 class CreatePickupSerializerMixin(mixins.CreateModelMixin):
     def perform_create(self, serializer):
-        self.get_serializer_define_object()
-        self.get_queryset().model.objects.create(
-            respondent=self.request.user,
-            paper=self.get_serializer_define_object(),
-            **{self.data_store_field_name: serializer.validated_data}
-        )
+        raise NotImplemented()
 
 
 class RetrievePickupSerializerMixin(mixins.RetrieveModelMixin):
