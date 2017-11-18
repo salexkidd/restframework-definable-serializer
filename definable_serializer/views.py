@@ -12,8 +12,7 @@ from rest_framework.generics import (
 from rest_framework.response import Response
 
 
-# TODO: Why use CreateAPIView? Maybe GenericAPIView???
-class ShowSerializerInfo(CreateAPIView):
+class ShowSerializerInfo(GenericAPIView):
     public = False
 
     def initial(self, request, *args, **kwargs):
