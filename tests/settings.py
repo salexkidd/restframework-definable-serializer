@@ -4,11 +4,23 @@ INSTALLED_APPS = (
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.staticfiles',
+    'django_extensions',
     'rest_framework',
     'drf_openapi',
     'definable_serializer',
     'definable_serializer.tests.for_test',
 )
+
+MIDDLEWARE = [
+    'django.middleware.security.SecurityMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+]
 
 DATABASES = {
     'default': {
@@ -16,8 +28,9 @@ DATABASES = {
         'NAME': ':memory:',
     }
 }
+
+
 SECRET_KEY = "secret_key_for_testing"
-MIDDLEWARE_CLASSES = []
 ROOT_URLCONF = 'tests.urls'
 
 TEMPLATES = [
@@ -49,15 +62,14 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.TokenAuthentication'
     ),
     'DEFAULT_RENDERER_CLASSES': (
-        'rest_framework.renderers.TemplateHTMLRenderer',
+        'definable_serializer.renderers.TemplateHTMLPickupSerializerRenderer',
         'rest_framework.renderers.JSONRenderer',
         'rest_framework.renderers.SchemaJSRenderer',
         'rest_framework.renderers.CoreJSONRenderer',
-        'rest_framework.renderers.DocumentationRenderer',
-        'rest_framework.renderers.BrowsableAPIRenderer',
         'definable_serializer.renderers.CoreJSONPickupSerializerRenderer',
         'definable_serializer.renderers.OpenAPIPickupSerializerSchemaRenderer',
         'definable_serializer.renderers.SwaggerUIPickupSerializerRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
     ),
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10,
@@ -72,4 +84,13 @@ SWAGGER_SETTINGS = {
             "in": "header"
         },
     },
+}
+
+
+DEBUG = True
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': '/tmp/test.sqlite3',
+    }
 }
