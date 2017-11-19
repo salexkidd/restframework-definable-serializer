@@ -53,7 +53,6 @@ class AnswerViewSet(PickupSerializerViewSet):
         return SerializerForList
 
     def perform_create(self, serializer):
-        self.get_serializer_define_object()
         self.get_queryset().model.objects.create(
             respondent=self.request.user,
             paper=self.get_serializer_define_object(),

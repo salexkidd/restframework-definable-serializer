@@ -1,6 +1,7 @@
+from django.http import Http404
 from django.shortcuts import render
 
-from rest_framework.renderers import CoreJSONRenderer
+from rest_framework.renderers import CoreJSONRenderer, TemplateHTMLRenderer
 from rest_framework_swagger.renderers import (
     OpenAPIRenderer, OpenAPICodec,
 )
@@ -73,3 +74,62 @@ class OpenAPIPickupSerializerSchemaRenderer(OpenAPIDocMixin, OpenAPIRenderer):
 class SwaggerUIPickupSerializerRenderer(SwaggerUIRenderer):
     template = 'swagger_ui_serializer_per_object.html'
     format = 'swagger-pickup-serializer'
+
+
+class TemplateHTMLPickupSerializerRenderer(TemplateHTMLRenderer):
+
+    media_type = 'text/html'
+    format = 'pickup-serializer-html'
+    charset = 'utf-8'
+
+    def render(self, data, accepted_media_type=None, renderer_context=None):
+        renderer_context = renderer_context or {}
+        view = renderer_context['view']
+        request = renderer_context['request']
+        response = renderer_context['response']
+
+        template_names = self.get_template_names(response, view)
+        template = self.resolve_template(template_names)
+
+        if hasattr(self, 'resolve_context'):
+            context = self.resolve_context(data, request, response)
+        else:
+            context = self.get_template_context(data, renderer_context)
+
+        return template.render(context, request=request)
+
+    def get_template_context(self, data, renderer_context):
+        view = renderer_context['view']
+        request = renderer_context['request']
+        response = renderer_context['response']
+
+        instance = None
+        serializer = None
+        serializer_class = view.get_serializer_class()
+
+        data = dict()
+        try:
+            data = view.get_data_store_field_from_instance()
+        except Http404 as e:
+            ...
+
+        if request.method in ("POST", "PUT", "PATCH",):
+            serializer = serializer_class(data=request.data)
+            serializer.is_valid(raise_exception=False)
+
+        else:
+            try:
+                instance = view.get_object()
+                data = getattr(instance, view.data_store_field_name, {})
+                serializer = serializer_class(data=data)
+                serializer.is_valid(raise_exception=False)
+
+            except Http404 as e:
+                serializer = serializer_class()
+
+        data["serializer"] = serializer
+        data["instance"] = instance
+
+        data.update(view.get_template_context())
+
+        return data

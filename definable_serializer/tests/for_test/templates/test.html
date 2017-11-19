@@ -1,5 +1,6 @@
 {% load rest_framework %}
 {% block "content" %}
+<h1>Input here</h1>
 <form action="./" method="POST">
     {% csrf_token %}
     {% render_form serializer %}

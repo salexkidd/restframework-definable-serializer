@@ -29,11 +29,6 @@ class BaseViewTest(TestCase):
             )
 
         for correct_str in test_data["correct_contents"]:
-
-            if correct_str not in content_str:
-                print(correct_str)
-                import ipdb; ipdb.set_trace()
-
             self.assertTrue(correct_str in content_str)
 
 class TestAdminDetail(BaseViewTest):
@@ -236,15 +231,18 @@ class TestPickupSerializer(BaseViewTest):
         self.response_test(response, test_data)
 
     def test_access_html(self):
-        request_format = "html"
+        request_format = "pickup-serializer-html"
         url = self.get_url(request_format)
         test_data = {
-            "renderer_class_name": "TemplateHTMLRenderer",
-            "correct_contents": [],
+            "renderer_class_name": "TemplateHTMLPickupSerializerRenderer",
+            "correct_contents": [
+                '<h1>Input here</h1>\n<form action="./" method="POST">',
+                '<label >Last name</label>',
+                '<label >First name</label>',
+            ],
             "response_status": http_status.HTTP_404_NOT_FOUND
         }
         response = self.client.get(url)
-
         self.response_test(response, test_data)
 
     def test_corejson_serializer_per_object(self):

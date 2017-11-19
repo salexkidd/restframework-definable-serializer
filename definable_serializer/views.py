@@ -90,6 +90,13 @@ class PickupSerializerGenericView(GenericAPIView):
 
         return obj
 
+    def get_data_store_field_from_instance(self):
+        self.get_object()
+        return getattr(
+            self.get_object(),
+            self.data_store_field_name
+        )
+
     def get_serializer_define_object(self):
         filer_key = self.lookup_field.split("__")[-1]
         filter_kwargs = {filer_key: self.kwargs["pickup_serializer"]}
@@ -108,3 +115,6 @@ class PickupSerializerGenericView(GenericAPIView):
             obj, "get_{}_serializer_class".format(self.serializer_field_name))
 
         return get_serializer_func()
+
+    def get_template_context(self):
+        return {}

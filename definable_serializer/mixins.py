@@ -1,9 +1,29 @@
+from django.http import Http404
+
 from rest_framework.response import Response
 from rest_framework import serializers
 from rest_framework import mixins
 
+from .renderers import TemplateHTMLPickupSerializerRenderer
+
 
 class CreatePickupSerializerMixin(mixins.CreateModelMixin):
+    def create(self, request, *args, **kwargs):
+
+        instance = None
+        try:
+            instance = self.get_object()
+        except Http404:
+            ...
+
+        response = None
+        if instance:
+            response = super().update(request, *args, **kwargs)
+        else:
+            response = super().create(request, *args, **kwargs)
+
+        return response
+
     def perform_create(self, serializer):
         raise NotImplemented()
 
@@ -11,9 +31,8 @@ class CreatePickupSerializerMixin(mixins.CreateModelMixin):
 class RetrievePickupSerializerMixin(mixins.RetrieveModelMixin):
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
-        serializer = self.get_serializer(
-            getattr(instance, self.data_store_field_name)
-        )
+        data = self.get_data_store_field_from_instance()
+        serializer = self.get_serializer(data)
         return Response(serializer.data)
 
 
@@ -22,7 +41,7 @@ class UpdatePickupSerializerMixin(mixins.UpdateModelMixin):
         partial = kwargs.pop('partial', False)
         instance = self.get_object()
 
-        data = instance.data
+        data = self.get_data_store_field_from_instance()
         if partial:
             data.update(request.data)
         else:
