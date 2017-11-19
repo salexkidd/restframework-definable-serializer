@@ -1,49 +1,49 @@
 from django.http import Http404
 from django.shortcuts import render
 
+from rest_framework import status as http_status
 from rest_framework.renderers import CoreJSONRenderer, TemplateHTMLRenderer
-from rest_framework_swagger.renderers import (
-    OpenAPIRenderer, OpenAPICodec,
-)
 
 import re
 import coreapi
-from drf_openapi.codec import SwaggerUIRenderer, OpenAPIRenderer
-from drf_openapi.entities import OpenApiSchemaGenerator, OpenApiDocument
-
+from drf_openapi.codec import (
+    SwaggerUIRenderer, OpenAPIRenderer, OpenAPICodec
+)
+from drf_openapi.entities import (
+    OpenApiSchemaGenerator, OpenApiDocument
+)
 DEFAULT_NO_VERSION_STRING = "no-versioning"
 
 
 class OpenAPIDocMixin(object):
-    def camel_to_sneak(self, string):
-        return re.sub('([a-z0-9])([A-Z])', r'\1_\2', string).lower()
-
     def get_openapi_doc(self, data, media_type=None, renderer_context=None):
         view = renderer_context["view"]
         request = renderer_context["request"]
 
-        schema_gen = OpenApiSchemaGenerator(version=DEFAULT_NO_VERSION_STRING)
+        opt = {
+            "api_name": view.__class__.__name__,
+            "api_version": DEFAULT_NO_VERSION_STRING,
+        }
+
+        for attr in ("api_name", "api_version",):
+            func_name = "get_{}".format(attr)
+            opt[attr] = getattr(view, func_name, lambda: None)() or opt[attr]
+
+        schema_gen = OpenApiSchemaGenerator(opt["api_version"])
         content_dict = {
             action: schema_gen.get_link(request.path, method.upper(), view)
                 for method, action in view.action_map.items()
         }
 
-        opt = {
-            "api_name": self.camel_to_sneak(view.__class__.__name__),
-            "version": DEFAULT_NO_VERSION_STRING,
-        }
-
-        for attr in ("api_name", "version",):
-            func_name = "get_{}".format(attr)
-            opt[attr] = getattr(view, func_name, lambda: None)() or opt[attr]
-
-        return OpenApiDocument(
+        doc = OpenApiDocument(
+            version=opt["api_version"],
             title="{} API".format(opt["api_name"]),
-            description=view.__doc__ ,
+            description=view.__doc__,
             url=request.build_absolute_uri(),
             content={opt["api_name"]: content_dict},
-            version=opt["version"]
         )
+
+        return doc
 
 
 class CoreJSONPickupSerializerRenderer(OpenAPIDocMixin, CoreJSONRenderer):
@@ -52,9 +52,10 @@ class CoreJSONPickupSerializerRenderer(OpenAPIDocMixin, CoreJSONRenderer):
     format = 'corejson-pickup-serializer'
 
     def render(self, data, media_type=None, renderer_context=None):
+        renderer_context["response"].status_code = http_status.HTTP_200_OK
         return coreapi.codecs.CoreJSONCodec().dump(
             self.get_openapi_doc(
-                data, media_type=None, renderer_context=renderer_context),
+                data, media_type=media_type, renderer_context=renderer_context),
             indent=bool(renderer_context.get('indent', 0))
         )
 
@@ -68,6 +69,8 @@ class OpenAPIPickupSerializerSchemaRenderer(OpenAPIDocMixin, OpenAPIRenderer):
         doc = self.get_openapi_doc(
             data, media_type=None, renderer_context=renderer_context)
         extra = self.get_customizations()
+        renderer_context["response"].status_code = http_status.HTTP_200_OK
+
         return OpenAPICodec().encode(doc, extra=extra)
 
 
@@ -96,6 +99,7 @@ class TemplateHTMLPickupSerializerRenderer(TemplateHTMLRenderer):
         else:
             context = self.get_template_context(data, renderer_context)
 
+        renderer_context["response"].status_code = http_status.HTTP_200_OK
         return template.render(context, request=request)
 
     def get_template_context(self, data, renderer_context):

@@ -240,7 +240,7 @@ class TestPickupSerializer(BaseViewTest):
                 '<label >Last name</label>',
                 '<label >First name</label>',
             ],
-            "response_status": http_status.HTTP_404_NOT_FOUND
+            "response_status": http_status.HTTP_200_OK
         }
         response = self.client.get(url)
         self.response_test(response, test_data)
@@ -254,7 +254,7 @@ class TestPickupSerializer(BaseViewTest):
                 '"create":{"_type":"link","url":"/for_test_app/answer/1/"',
                 '"action":"post","encoding":"application/json"',
             ],
-            "response_status": http_status.HTTP_404_NOT_FOUND
+            "response_status": http_status.HTTP_200_OK
         }
         response = self.client.get(url)
         self.response_test(response, test_data)
@@ -267,7 +267,7 @@ class TestPickupSerializer(BaseViewTest):
             "correct_contents": [
                 '{"swagger": "2.0", "info": {"title": "answer_view_set API",'
             ],
-            "response_status": http_status.HTTP_404_NOT_FOUND
+            "response_status": http_status.HTTP_200_OK
         }
         response = self.client.get(url)
         self.response_test(response, test_data)

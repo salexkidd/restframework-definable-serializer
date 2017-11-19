@@ -6,9 +6,9 @@ from rest_framework.exceptions import NotFound
 from rest_framework import mixins as rf_mixins
 from rest_framework import serializers
 
-
 from . import models as for_test_models
-from definable_serializer.viewsets import (
+
+from definable_serializer.contrib.pickup_serializer.viewsets import (
     PickupSerializerViewSet,
 )
 
