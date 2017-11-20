@@ -6,11 +6,12 @@
 
 <fieldset class="module aligned ">
 {% for field_name, serializer in restframework_definable_serializers.items %}
-    {% url opts|admin_urlname:'show-browsable-api-view' original.pk|admin_urlquote field_name as test_url%}
+
+    {% url 'admin:show-browsable-api-view' app_label=opts.app_label model_name=opts.model_name pk=original.pk field_name=field_name as show_serializer_url %}
 
     <h2>
         Field of {{field_name}}
-        <span><a align="right" href="{{test_url}}" style="color: #FFFFFF; text-decoration: underline" target="_blank">(Show Restframework Browsable Page)</a></span>
+        <span><a align="right" href="{{show_serializer_url}}?format=api" style="color: #FFFFFF; text-decoration: underline" target="_blank">(Show Restframework Browsable Page)</a></span>
     </h2>
 
     <pre>{{serializer}}</pre>

@@ -8,8 +8,6 @@ from rest_framework.renderers import AdminRenderer
 from definable_serializer.models import AbstractDefinableSerializerField
 from definable_serializer.views import ShowSerializerInfo
 
-from functools import update_wrapper
-
 
 class DefinableSerializerAdmin(admin.ModelAdmin):
     change_form_template = "admin/definable_serializer/change_form.html"
@@ -43,20 +41,12 @@ class DefinableSerializerAdmin(admin.ModelAdmin):
         return super().changeform_view(request, object_id, form_url, extra_context)
 
     def get_urls(self):
-        info = self.model._meta.app_label, self.model._meta.model_name
         urls = super().get_urls()
-
-        def wrap(view):
-            def wrapper(*args, **kwargs):
-                return self.admin_site.admin_view(view)(*args, **kwargs)
-            wrapper.model_admin = self
-            return update_wrapper(wrapper, view)
-
         return [
             url(
-                r'(?P<pk>\d+)/(?P<field_name>.+)/show-browsable-api-view/$',
+                r'(?P<app_label>.+)/(?P<model_name>.+)/(?P<pk>\d+)/(?P<field_name>.+)/show-browsable-api-view/$',
                 self.admin_site.admin_view(ShowSerializerInfo.as_view()),
-                name='%s_%s_show-browsable-api-view' % info
+                name='show-browsable-api-view'
             ),
 
         ] + urls
