@@ -1,12 +1,10 @@
 from django.http import Http404
-from django.shortcuts import render
 
 from rest_framework import status as http_status
 from rest_framework.renderers import (
     CoreJSONRenderer, TemplateHTMLRenderer
 )
 
-import re
 import coreapi
 from drf_openapi.codec import (
     SwaggerUIRenderer, OpenAPIRenderer, OpenAPICodec
@@ -113,15 +111,14 @@ class TemplateHTMLPickupSerializerRenderer(TemplateHTMLRenderer):
         try:
             instance = view.get_object()
         except Http404 as e:
-            ...
+            pass
 
         serializer = None
         serializer_class = view.get_serializer_class()
 
-        serializer_data = None
-
         # The browser form does not support the PUT & PATCH method.
         # http://jxck.hatenablog.com/entry/why-form-dosent-support-put-delete
+        serializer_data = None
         if request.method in ("POST",):
             serializer_data = request.data
             serializer = serializer_class(data=serializer_data)
