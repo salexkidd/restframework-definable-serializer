@@ -43,12 +43,9 @@ class PickupSerializerGenericView(GenericAPIView):
 
         return obj
 
-    def get_data_store_field_from_instance(self):
-        self.get_object()
-        return getattr(
-            self.get_object(),
-            self.data_store_field_name
-        )
+    def get_store_data(self):
+        instance = self.get_object()
+        return getattr(instance, self.data_store_field_name)
 
     def get_serializer_define_object(self):
         filer_key = self.lookup_field.split("__")[-1]

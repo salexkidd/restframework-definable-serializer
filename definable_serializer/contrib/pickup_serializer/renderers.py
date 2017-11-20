@@ -2,7 +2,9 @@ from django.http import Http404
 from django.shortcuts import render
 
 from rest_framework import status as http_status
-from rest_framework.renderers import CoreJSONRenderer, TemplateHTMLRenderer
+from rest_framework.renderers import (
+    CoreJSONRenderer, TemplateHTMLRenderer
+)
 
 import re
 import coreapi
@@ -70,11 +72,11 @@ class OpenAPIPickupSerializerSchemaRenderer(OpenAPIDocMixin, OpenAPIRenderer):
             data, media_type=None, renderer_context=renderer_context)
         extra = self.get_customizations()
         renderer_context["response"].status_code = http_status.HTTP_200_OK
-
         return OpenAPICodec().encode(doc, extra=extra)
 
 
 class SwaggerUIPickupSerializerRenderer(SwaggerUIRenderer):
+
     template = 'swagger_ui_serializer_per_object.html'
     format = 'swagger-pickup-serializer'
 
@@ -108,32 +110,34 @@ class TemplateHTMLPickupSerializerRenderer(TemplateHTMLRenderer):
         response = renderer_context['response']
 
         instance = None
-        serializer = None
-        serializer_class = view.get_serializer_class()
-
-        data = dict()
         try:
-            data = view.get_data_store_field_from_instance()
+            instance = view.get_object()
         except Http404 as e:
             ...
 
-        if request.method in ("POST", "PUT", "PATCH",):
-            serializer = serializer_class(data=request.data)
-            serializer.is_valid(raise_exception=False)
+        serializer = None
+        serializer_class = view.get_serializer_class()
+
+        serializer_data = None
+
+        # The browser form does not support the PUT & PATCH method.
+        # http://jxck.hatenablog.com/entry/why-form-dosent-support-put-delete
+        if request.method in ("POST",):
+            serializer_data = request.data
+            serializer = serializer_class(data=serializer_data)
 
         else:
             try:
-                instance = view.get_object()
-                data = getattr(instance, view.data_store_field_name, {})
-                serializer = serializer_class(data=data)
-                serializer.is_valid(raise_exception=False)
-
+                serializer_data = view.get_store_data()
+                serializer = serializer_class(data=serializer_data)
             except Http404 as e:
                 serializer = serializer_class()
 
+        if serializer_data:
+            serializer.is_valid(raise_exception=False)
+
         data["serializer"] = serializer
         data["instance"] = instance
-
         data.update(view.get_template_context())
 
         return data

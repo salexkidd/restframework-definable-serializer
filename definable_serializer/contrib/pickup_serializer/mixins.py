@@ -31,7 +31,7 @@ class CreatePickupSerializerMixin(mixins.CreateModelMixin):
 class RetrievePickupSerializerMixin(mixins.RetrieveModelMixin):
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
-        data = self.get_data_store_field_from_instance()
+        data = self.get_store_data()
         serializer = self.get_serializer(data)
         return Response(serializer.data)
 
@@ -41,7 +41,7 @@ class UpdatePickupSerializerMixin(mixins.UpdateModelMixin):
         partial = kwargs.pop('partial', False)
         instance = self.get_object()
 
-        data = self.get_data_store_field_from_instance()
+        data = self.get_store_data()
         if partial:
             data.update(request.data)
         else:

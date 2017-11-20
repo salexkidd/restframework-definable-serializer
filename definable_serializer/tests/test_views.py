@@ -265,7 +265,7 @@ class TestPickupSerializer(BaseViewTest):
         test_data = {
             "renderer_class_name": "OpenAPIPickupSerializerSchemaRenderer",
             "correct_contents": [
-                '{"swagger": "2.0", "info": {"title": "answer_view_set API",'
+                '{"swagger": "2.0", "info": {"title": "AnswerViewSet API",'
             ],
             "response_status": http_status.HTTP_200_OK
         }
