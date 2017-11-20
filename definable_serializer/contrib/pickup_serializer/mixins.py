@@ -59,7 +59,6 @@ class UpdatePickupSerializerMixin(mixins.UpdateModelMixin):
 
 
 class ListPickupSerializerModelMixin(object):
-
     def serializer_class_for_list(self):
         class SerializerForList(serializers.ModelSerializer):
             class Meta:

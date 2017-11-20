@@ -1,16 +1,16 @@
 from django.conf.urls import url
 from rest_framework.routers import (
-    Route, DynamicDetailRoute, SimpleRouter, DefaultRouter
+    Route, DynamicDetailRoute, DefaultRouter
 )
+
+PICKUP_SERIALIZER_REGEX = r'(?P<pickup_serializer>.+)'
 
 
 class PickupSerializerRouter(DefaultRouter):
     routes = [
         Route(
             url=r'^{prefix}{trailing_slash}$',
-            mapping={
-                'get': 'list',
-            },
+            mapping={'get': 'list',},
             name='{basename}-list',
             initkwargs={'suffix': 'List'}
         ),
@@ -49,7 +49,7 @@ class PickupSerializerRouter(DefaultRouter):
                     prefix=prefix,
                     lookup=lookup,
                     trailing_slash=self.trailing_slash,
-                    lookup_serializer=r'(?P<pickup_serializer>.+)',
+                    lookup_serializer=PICKUP_SERIALIZER_REGEX,
                 )
 
                 if not prefix and regex[:2] == '^/':
