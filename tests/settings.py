@@ -4,7 +4,6 @@ INSTALLED_APPS = (
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.staticfiles',
-    'django_extensions',
     'rest_framework',
     'drf_openapi',
     'definable_serializer',
@@ -62,13 +61,13 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.TokenAuthentication'
     ),
     'DEFAULT_RENDERER_CLASSES': (
-        'definable_serializer.renderers.TemplateHTMLPickupSerializerRenderer',
+        'definable_serializer.contrib.pickup_serializer.renderers.TemplateHTMLPickupSerializerRenderer',
         'rest_framework.renderers.JSONRenderer',
         'rest_framework.renderers.SchemaJSRenderer',
         'rest_framework.renderers.CoreJSONRenderer',
-        'definable_serializer.renderers.CoreJSONPickupSerializerRenderer',
-        'definable_serializer.renderers.OpenAPIPickupSerializerSchemaRenderer',
-        'definable_serializer.renderers.SwaggerUIPickupSerializerRenderer',
+        'definable_serializer.contrib.pickup_serializer.renderers.CoreJSONPickupSerializerRenderer',
+        'definable_serializer.contrib.pickup_serializer.renderers.OpenAPIPickupSerializerSchemaRenderer',
+        'definable_serializer.contrib.pickup_serializer.renderers.SwaggerUIPickupSerializerRenderer',
         'rest_framework.renderers.BrowsableAPIRenderer',
     ),
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
@@ -84,13 +83,4 @@ SWAGGER_SETTINGS = {
             "in": "header"
         },
     },
-}
-
-
-DEBUG = True
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': '/tmp/test.sqlite3',
-    }
 }
