@@ -3,4 +3,15 @@ from django.contrib import admin
 
 
 urlpatterns = [
+    url(
+        r'^admin/',
+        admin.site.urls
+    ),
+    url(
+        r'^for_test_app/',
+        include(
+            "definable_serializer.tests.for_test.urls",
+            namespace='for_test'
+        )
+    )
 ]

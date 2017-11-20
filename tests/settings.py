@@ -3,8 +3,24 @@ INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
+    'django.contrib.staticfiles',
+    'django_extensions',
+    'rest_framework',
+    'drf_openapi',
     'definable_serializer',
+    'definable_serializer.tests.for_test',
 )
+
+MIDDLEWARE = [
+    'django.middleware.security.SecurityMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+]
 
 DATABASES = {
     'default': {
@@ -12,8 +28,9 @@ DATABASES = {
         'NAME': ':memory:',
     }
 }
+
+
 SECRET_KEY = "secret_key_for_testing"
-MIDDLEWARE_CLASSES = []
 ROOT_URLCONF = 'tests.urls'
 
 TEMPLATES = [
@@ -28,13 +45,52 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'django.template.context_processors.static',
-                'django_settings_contextprocessor.context_processors.settings_module_name',
-                'django_settings_contextprocessor.context_processors.django_debug_flg',
-                'django_settings_contextprocessor.context_processors.djagno_settings_data',
-                'django_projectname.context_processors.project_name',
-                'apps.systemsettings.context_processors.other_system_token',
-                'apps.systemsettings.context_processors.sales_tax_data',
             ],
         },
     },
 ]
+
+STATIC_URL = '/static/'
+
+REST_FRAMEWORK = {
+    'DEFAULT_VERSIONING_CLASS': 'rest_framework.versioning.AcceptHeaderVersioning',
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.TokenAuthentication'
+    ),
+    'DEFAULT_RENDERER_CLASSES': (
+        'definable_serializer.renderers.TemplateHTMLPickupSerializerRenderer',
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.SchemaJSRenderer',
+        'rest_framework.renderers.CoreJSONRenderer',
+        'definable_serializer.renderers.CoreJSONPickupSerializerRenderer',
+        'definable_serializer.renderers.OpenAPIPickupSerializerSchemaRenderer',
+        'definable_serializer.renderers.SwaggerUIPickupSerializerRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
+    ),
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 10,
+}
+
+SWAGGER_SETTINGS = {
+    'USE_SESSION_AUTH': True,
+    'SECURITY_DEFINITIONS': {
+        "api_key": {
+            "type": "apiKey",
+            "name": "Authorization Token ******",
+            "in": "header"
+        },
+    },
+}
+
+
+DEBUG = True
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': '/tmp/test.sqlite3',
+    }
+}
