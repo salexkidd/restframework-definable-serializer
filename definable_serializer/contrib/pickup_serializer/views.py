@@ -1,11 +1,5 @@
-try:
-    from django.urls import resolve
-except ModuleNotFoundError as e:
-    from django.core.urlresolvers import resolve
-
-from rest_framework import serializers, viewsets
 from rest_framework.generics import (
-    get_object_or_404, CreateAPIView, GenericAPIView
+    get_object_or_404, GenericAPIView
 )
 
 

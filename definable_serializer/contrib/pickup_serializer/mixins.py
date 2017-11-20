@@ -4,17 +4,14 @@ from rest_framework.response import Response
 from rest_framework import serializers
 from rest_framework import mixins
 
-from .renderers import TemplateHTMLPickupSerializerRenderer
-
 
 class CreatePickupSerializerMixin(mixins.CreateModelMixin):
     def create(self, request, *args, **kwargs):
-
         instance = None
         try:
             instance = self.get_object()
         except Http404:
-            ...
+            pass
 
         response = None
         if instance:
@@ -30,7 +27,6 @@ class CreatePickupSerializerMixin(mixins.CreateModelMixin):
 
 class RetrievePickupSerializerMixin(mixins.RetrieveModelMixin):
     def retrieve(self, request, *args, **kwargs):
-        instance = self.get_object()
         data = self.get_store_data()
         serializer = self.get_serializer(data)
         return Response(serializer.data)

@@ -48,5 +48,4 @@ class DefinableSerializerAdmin(admin.ModelAdmin):
                 self.admin_site.admin_view(ShowSerializerInfo.as_view()),
                 name='show-browsable-api-view'
             ),
-
         ] + urls
