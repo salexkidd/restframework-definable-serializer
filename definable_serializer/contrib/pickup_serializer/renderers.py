@@ -48,7 +48,6 @@ class OpenAPIDocMixin(object):
 
 class CoreJSONPickupSerializerRenderer(OpenAPIDocMixin, CoreJSONRenderer):
 
-    media_type = 'application/coreapi-pickup-serializer+json'
     format = 'corejson-pickup-serializer'
 
     def render(self, data, media_type=None, renderer_context=None):
@@ -62,7 +61,6 @@ class CoreJSONPickupSerializerRenderer(OpenAPIDocMixin, CoreJSONRenderer):
 
 class OpenAPIPickupSerializerSchemaRenderer(OpenAPIDocMixin, OpenAPIRenderer):
 
-    media_type = 'application/openapi-pickup-serializer-schema+json'
     format = 'openapi-pickup-serializer-schema'
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
@@ -81,7 +79,6 @@ class SwaggerUIPickupSerializerRenderer(SwaggerUIRenderer):
 
 class TemplateHTMLPickupSerializerRenderer(TemplateHTMLRenderer):
 
-    media_type = 'text/html'
     format = 'pickup-serializer-html'
     charset = 'utf-8'
 
