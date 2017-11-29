@@ -2,6 +2,11 @@ from rest_framework.generics import (
     get_object_or_404, GenericAPIView
 )
 
+try:
+    from django.urls import resolve
+except ModuleNotFoundError as e:
+    from django.core.urlresolvers import resolve
+
 
 class PickupSerializerGenericView(GenericAPIView):
     serializer_queryset = None
@@ -17,6 +22,16 @@ class PickupSerializerGenericView(GenericAPIView):
     def get_api_version(self):
         return self.api_version
 
+    def get_pickup_serializer_kwargs(self):
+        key = "pickup_serializer"
+
+        pickup_serializer =  self.kwargs.get(
+            key,
+            resolve(self.request.path).kwargs.get(key)
+        )
+
+        return pickup_serializer
+
     def get_queryset_for_serializer(self):
         return self.serializer_queryset
 
@@ -29,7 +44,7 @@ class PickupSerializerGenericView(GenericAPIView):
     def get_object(self):
         queryset = self.filter_queryset(self.get_queryset())
         lookup_url_kwarg = self.lookup_url_kwarg or self.lookup_field
-        filter_kwargs = {self.lookup_field: self.kwargs["pickup_serializer"]}
+        filter_kwargs = {self.lookup_field: self.get_pickup_serializer_kwargs()}
         filter_kwargs.update(self.get_unique_key_data())
 
         obj = get_object_or_404(queryset, **filter_kwargs)
@@ -43,8 +58,7 @@ class PickupSerializerGenericView(GenericAPIView):
 
     def get_serializer_define_object(self):
         filer_key = self.lookup_field.split("__")[-1]
-        filter_kwargs = {filer_key: self.kwargs["pickup_serializer"]}
-
+        filter_kwargs = {filer_key: self.get_pickup_serializer_kwargs()}
         obj = get_object_or_404(
             self.get_queryset_for_serializer(), **filter_kwargs)
 
