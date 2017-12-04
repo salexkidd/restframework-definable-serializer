@@ -36,6 +36,7 @@ setup(
         "ruamel.yaml>=0.13.5",
         "simplejson>=3.11.1",
         "six>=1.11.0",
+        "dateparser==0.6.0",
     ],
     classifiers=[
         'Development Status :: 4 - Beta',

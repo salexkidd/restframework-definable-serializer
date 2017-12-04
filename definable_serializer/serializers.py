@@ -1,9 +1,11 @@
+from django.conf import settings as dj_settings
 from django.utils.translation import ugettext as _
 from django.core.exceptions import ValidationError
 from django.utils.translation import get_language
 
 from rest_framework import serializers as rf_serializers
 
+import dateparser
 import simplejson
 import codecs
 import pprint
@@ -19,7 +21,6 @@ NOT_AVAILABLE_FIELDS = (
     rf_serializers.SerializerMethodField,
 )
 
-
 __all__ = (
     "build_serializer",
     "build_serializer_by_json",
@@ -28,10 +29,18 @@ __all__ = (
     "build_serializer_by_yaml_file",
 )
 
+STR_TO_DATETIME_MAP = {
+    rf_serializers.DateField: lambda x: x.date() if x else None,
+    rf_serializers.TimeField: lambda x: x.time() if x else None,
+    rf_serializers.DateTimeField: lambda x: x if x else None,
+}
+
 
 class TranslationMixin:
+
     @classmethod
-    def _get_translate_string(metacls, field_defn, field_name, field_class, language="default", raise_exception=False):
+    def _get_translate_string(metacls, field_defn, field_name, field_class,
+                              language="default", raise_exception=False):
 
         def _get_or_default(v, target):
             trans_text = None
@@ -39,7 +48,8 @@ class TranslationMixin:
                 trans_text = v.get(language, None) or v.get("default", None)
                 if trans_text is None and raise_exception:
                     raise ValidationError({
-                        field_name: "'{}' is required in '{}'".format(language, target)
+                        field_name: "'{}' is required in '{}'".format(
+                            language, target)
                     })
             return trans_text
 
@@ -50,7 +60,8 @@ class TranslationMixin:
 
         # label and help_text
         for target in ("label", "help_text", "initial"):
-            trans_text = _get_or_default(field_kwargs.get(target, None), target)
+            trans_text = _get_or_default(
+                field_kwargs.get(target, None), target)
             if trans_text:
                 result[target] = trans_text
 
@@ -88,7 +99,8 @@ class TranslationMixin:
         return result
 
 
-class DefinableSerializerMeta(rf_serializers.SerializerMetaclass, TranslationMixin):
+class DefinableSerializerMeta(rf_serializers.SerializerMetaclass,
+                              TranslationMixin):
     # https://stackoverflow.com/questions/27258557/metaclass-arguments-for-python-3-x
     @classmethod
     def _parse_validate_method(metacls, method_str):
@@ -123,7 +135,9 @@ class DefinableSerializerMeta(rf_serializers.SerializerMetaclass, TranslationMix
         return field_class
 
     @classmethod
-    def _build_fields(metacls, fields_defn, serializer_classes, allow_validate_method):
+    def _build_fields(metacls, fields_defn, serializer_classes,
+                      allow_validate_method):
+
         fields = dict()
         validate_methods = dict()
 
@@ -153,6 +167,13 @@ class DefinableSerializerMeta(rf_serializers.SerializerMetaclass, TranslationMix
                     raise ValidationError({field_name: e})
 
             return validators
+
+        def _convert_str_to_datetime(field_name, datetime_str):
+            try:
+                return dateparser.parse(datetime_str)
+            except Exception as e:
+                msg = "Can't parser date or time format: {}"
+                raise ValidationError({field_name: msg.format(e)})
 
         for defn in fields_defn:
             field_class_str = defn["field"]
@@ -193,6 +214,13 @@ class DefinableSerializerMeta(rf_serializers.SerializerMetaclass, TranslationMix
             if validators:
                 field_kwargs["validators"] = validators
 
+            # convert str to object when Dates Field
+            if issubclass(field_class, tuple(STR_TO_DATETIME_MAP.keys())):
+                field_kwargs["initial"] = STR_TO_DATETIME_MAP[field_class](
+                    _convert_str_to_datetime(
+                        field_name, field_kwargs.get("initial", "")))
+
+            # create field class
             try:
                 fields[field_name] = field_class(*field_args, **field_kwargs)
 
@@ -226,7 +254,8 @@ class DefinableSerializerMeta(rf_serializers.SerializerMetaclass, TranslationMix
             if field_validate_method:
                 try:
                     validate_methods.update({
-                        field_name: metacls._parse_validate_method(field_validate_method)
+                        field_name: metacls._parse_validate_method(
+                            field_validate_method)
                     })
 
                 except Exception as e:
@@ -285,13 +314,13 @@ class DefinableSerializerMeta(rf_serializers.SerializerMetaclass, TranslationMix
         if serializer_validate_method:
             try:
                 namespace.update({
-                    "validate": metacls._parse_validate_method(serializer_validate_method)
+                    "validate": metacls._parse_validate_method(
+                        serializer_validate_method)
                 })
 
             except Exception as e:
-                raise ValidationError({
-                    field_name: "Can't parse serializer_validate_method: {}".format(e)
-                })
+                msg = "Can't parse serializer_validate_method: {}"
+                raise ValidationError({field_name: msg.format(e)})
 
         kls = super().__new__(
             metacls, serializer_name, bases, namespace, *kwargs)
@@ -307,12 +336,12 @@ def _defn_pre_checker(defn_data):
 
     def _field_checker(defn):
         check_keys = ("name", "field",)
-
         for field in defn:
             for key in check_keys:
                 if key not in field:
-                    raise ValidationError("No {} in field: {}".format(
-                        key, pprint.pformat(field)))
+                    msg = "No {} in field: {}".format(
+                        key, pprint.pformat(field))
+                    raise ValidationError(msg)
 
     def _serializer_checker(defn):
         check_keys = ("name", "fields",)
@@ -346,7 +375,6 @@ class BaseDefinableSerializer(rf_serializers.Serializer, TranslationMixin):
             field = self.fields[field_name]
             field_class = field.__class__
 
-
             trans_dict = self.__class__._get_translate_string(
                 field_defn, field_name, field_class, language=lang)
 
@@ -373,7 +401,6 @@ class BaseDefinableSerializer(rf_serializers.Serializer, TranslationMixin):
             if trans_choices:
                 field._set_choices(trans_choices)
 
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.trans_text(**kwargs)
@@ -394,11 +421,15 @@ def build_serializer(defn_data, allow_validate_method=True):
             "namespace": DefinableSerializerMeta.__prepare__(
                 serializer_name, _base_classes, **kwargs)
         }
-
         return DefinableSerializerMeta(
             serializer_defn, _base_classes, **namespace, **kwargs)
 
-    _base_classes = (BaseDefinableSerializer,)
+    _base_classes = tuple([BaseDefinableSerializer, ] + [
+        pydoc.locate(base_class) for base_class in getattr(
+            dj_settings, "DEFINABLE_SERIALIZER_SETTINGS", {}).get(
+                "BASE_CLASSES", [])
+    ])
+
     serializer_classes = dict()
 
     _defn_pre_checker(defn_data)

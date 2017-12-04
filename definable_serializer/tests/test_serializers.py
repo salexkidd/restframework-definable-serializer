@@ -9,6 +9,8 @@ import os
 import yaml
 from copy import deepcopy
 from collections import OrderedDict
+import datetime
+
 
 TEST_DATA_FILE_DIR = os.path.join(
     os.path.dirname(os.path.abspath(__file__)),
@@ -445,3 +447,73 @@ class TestSerializer(TestCase):
             e.exception.message_dict["gendar_field"][0],
             "'default' is required in 'choices'"
         )
+
+    def test_date_or_time_field_initial(self):
+        base_defn = {
+            "main": {
+                "name": "AllDateTimeOrTimeField",
+                "fields": [
+                    {
+                        "name": "date_field",
+                        "field": "DateField",
+                        "field_kwargs": {"initial": "2000-01-31"}
+                    },
+                    {
+                        "name": "time_field",
+                        "field": "TimeField",
+                        "field_kwargs": {"initial": "12:01:02"}
+                    },
+                    {
+                        "name": "datetime_field",
+                        "field": "DateTimeField",
+                        "field_kwargs": {"initial": "2000-01-02 03:04:05"}
+                    },
+
+                    {
+                        "name": "non_default_date_field",
+                        "field": "DateField",
+                    },
+                    {
+                        "name": "non_default_time_field",
+                        "field": "TimeField",
+                    },
+                    {
+                        "name": "non_default_datetime_field",
+                        "field": "DateTimeField",
+                    },
+
+                ]
+            }
+        }
+        defined_serializer_kls = definable_serializer.build_serializer(base_defn)
+        serializer = defined_serializer_kls()
+
+        self.assertTrue(isinstance(serializer.fields["date_field"].initial, datetime.date))
+        self.assertTrue(isinstance(serializer.fields["time_field"].initial, datetime.time))
+        self.assertTrue(isinstance(serializer.fields["datetime_field"].initial, datetime.datetime))
+
+        self.assertEqual(serializer.fields["non_default_date_field"].initial, None)
+        self.assertEqual(serializer.fields["non_default_time_field"].initial, None)
+        self.assertEqual(serializer.fields["non_default_datetime_field"].initial, None)
+
+
+    def test_add_more_base_classes(self):
+
+        DEFINABLE_SERIALIZER_SETTINGS = {
+            "BASE_CLASSES": [
+                "definable_serializer.tests.test_serializers.AdditionalTestClassForTest",
+            ]
+        }
+
+        with self.settings(DEFINABLE_SERIALIZER_SETTINGS=DEFINABLE_SERIALIZER_SETTINGS):
+            yaml_file = os.path.join(TEST_DATA_FILE_DIR, "test_translation.yml")
+            serializer_class = definable_serializer.build_serializer_by_yaml_file(yaml_file)
+            self.assertTrue(hasattr(serializer_class(), "SAY_HELLO"))
+
+
+class AdditionalTestClassForTest:
+    """
+    definable_serializer.tests.test_serializers.AdditionalTestClassForTest
+    """
+
+    SAY_HELLO = "SAY_GOODBAY"
