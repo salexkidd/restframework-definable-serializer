@@ -13,12 +13,16 @@ definable-serializerでは、YAMLやJSONで記述された定義からシリア�
 - build_serializer_by_yaml_file
 
 
+.. _`build_serializer_function`:
+
 build_serializer関数
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. function:: build_serializer(definition, allow_validate_method=True)
+.. function:: build_serializer(definition, base_classes=[], allow_validate_method=True)
 
 ``build_serializer`` は定義が記述されたPythonのDictからシリアライザークラスを作成します。
+
+``base_classes`` 継承するクラスを指定することができます。
 
 ``allow_validate_method`` が ``False`` の場合、シリアライザーの定義中に ``validate_method`` が記述されていると ``ValidationError`` が発生します。
 
@@ -61,9 +65,11 @@ build_serializer関数
 build_serializer_by_json関数
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. function:: build_serializer_by_json(definition, allow_validate_method=True)
+.. function:: build_serializer_by_json(definition, base_classes=[], allow_validate_method=True)
 
 ``build_serializer_by_json`` は定義が記述されたJSON文字列からシリアライザークラスを作成します。
+
+``base_classes`` 継承するクラスを指定することができます。
 
 ``allow_validate_method`` が ``False`` の場合、シリアライザーの定義中に ``validate_method`` が記述されていると ``ValidationError`` が発生します。
 
@@ -99,11 +105,12 @@ build_serializer_by_json関数
 
 ------------------------------------------------------------------------------
 
+.. _`build_serializer_by_json_file_function`:
 
 build_serializer_by_json_file関数
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. function:: build_serializer_by_json_file(json_filepath, allow_validate_method=True)
+.. function:: build_serializer_by_json_file(json_filepath, base_classes=[], allow_validate_method=True)
 
 ``build_serializer_by_json_file`` は定義が記載されたJSONファイルからシリアライザークラスを作成します。
 
@@ -119,9 +126,11 @@ build_serializer_by_json_file関数
 build_serializer_by_yaml関数
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. function:: build_serializer_by_yaml(definition, allow_validate_method=True)
+.. function:: build_serializer_by_yaml(definition, base_classes=[], allow_validate_method=True)
 
 ``build_serializer_by_json`` 定義が記述されたYAML文字列からシリアライザークラスを作成します。
+
+``base_classes`` 継承するクラスを指定することができます。
 
 ``allow_validate_method`` が ``False`` の場合、シリアライザーの定義中に ``validate_method`` が記述されていると ValidationErrorが発生します。
 
@@ -154,11 +163,12 @@ build_serializer_by_yaml関数
 
 ------------------------------------------------------------------------------
 
+.. _`build_serializer_by_yaml_file_function`:
 
 build_serializer_by_yaml_file関数
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. function:: build_serializer_by_yaml_file(yaml_filepath, allow_validate_method=True)
+.. function:: build_serializer_by_yaml_file(yaml_filepath, base_classes=[], allow_validate_method=True)
 
 ``build_serializer_by_yaml_file`` 定義が記載されたYAMLファイルからシリアライザークラスを作成します。
 

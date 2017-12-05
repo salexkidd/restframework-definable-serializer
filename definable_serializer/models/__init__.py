@@ -30,7 +30,17 @@ class AbstractDefinitiveSerializerModel(models.Model):
 
     def _get_serializer(self, field_name):
         def _func():
-            return build_serializer(getattr(self, field_name))
+            field = self._meta.get_field(field_name)
+            defn = getattr(self, field_name)
+            allow_validate_method = getattr(field, "allow_validate_method", False)
+            base_classes = getattr(field, "base_classes", list())
+
+            return build_serializer(
+                defn,
+                base_classes=base_classes,
+                allow_validate_method=allow_validate_method,
+            )
+
         return _func
 
     def __getattr__(self, name):

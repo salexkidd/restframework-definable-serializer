@@ -9,7 +9,7 @@ from ..models import (
 
 from copy import deepcopy
 
-base_defn = {
+BASE_DEFN = {
     "main": {
         "name": "TestSerializer",
          "fields": [{
@@ -53,13 +53,38 @@ class ExampleYAMLModelWithDisallowValidateMethod(AbstractDefinitiveSerializerMod
     )
 
 
+class SpecifyBaseClassesModel(AbstractDefinitiveSerializerModel):
+    class TestClass():
+        IamTestClass = True
+
+    serializer_defn = DefinableSerializerByYAMLField(
+        allow_validate_method=True,
+        base_classes=[TestClass]
+    )
+
+
+class TestSpecifyBaseClasses(TestCase):
+
+    def test_specify_base_class(self):
+        defn = deepcopy(BASE_DEFN)
+        defn["main"]["fields"][0]["field_validate_method"] = validate_method_str
+
+        m = SpecifyBaseClassesModel()
+        m.serializer_defn = defn
+        m.full_clean()
+
+        serializer_class = m.get_serializer_defn_serializer_class()
+        self.assertTrue(hasattr(serializer_class(), "IamTestClass"))
+
+
+
 class TestDefinableSerializerByJSONField(TestCase):
 
     allow_class = ExampleJSONModelWithAllowValidateMethod
     disallow_class = ExampleJSONModelWithDisallowValidateMethod
 
     def test_allow_validate_method_for_field(self):
-        defn = deepcopy(base_defn)
+        defn = deepcopy(BASE_DEFN)
         defn["main"]["fields"][0]["field_validate_method"] = validate_method_str
 
         m = self.allow_class()
@@ -68,7 +93,7 @@ class TestDefinableSerializerByJSONField(TestCase):
 
 
     def test_disallow_validate_method_for_field(self):
-        defn = deepcopy(base_defn)
+        defn = deepcopy(BASE_DEFN)
         defn["main"]["fields"][0]["field_validate_method"] = validate_method_str
 
         m = self.disallow_class()
@@ -79,7 +104,7 @@ class TestDefinableSerializerByJSONField(TestCase):
 
 
     def test_allow_validate_method_for_serializer(self):
-        defn = deepcopy(base_defn)
+        defn = deepcopy(BASE_DEFN)
         defn["main"]["serializer_validate_method"] = validate_method_str
 
         m = self.allow_class()
@@ -88,7 +113,7 @@ class TestDefinableSerializerByJSONField(TestCase):
 
 
     def test_disallow_validate_method_for_serializer(self):
-        defn = deepcopy(base_defn)
+        defn = deepcopy(BASE_DEFN)
         defn["main"]["serializer_validate_method"] = validate_method_str
 
         m = self.disallow_class()
@@ -96,6 +121,7 @@ class TestDefinableSerializerByJSONField(TestCase):
 
         with self.assertRaises(ValidationError):
             m.full_clean()
+
 
 
 class TestDefinableSerializerByYAMLField(TestCase):
@@ -104,7 +130,7 @@ class TestDefinableSerializerByYAMLField(TestCase):
     disallow_class = ExampleYAMLModelWithDisallowValidateMethod
 
     def test_allow_validate_method_for_field(self):
-        defn = deepcopy(base_defn)
+        defn = deepcopy(BASE_DEFN)
         defn["main"]["fields"][0]["field_validate_method"] = validate_method_str
 
         m = self.allow_class()
@@ -113,7 +139,7 @@ class TestDefinableSerializerByYAMLField(TestCase):
 
 
     def test_disallow_validate_method_for_field(self):
-        defn = deepcopy(base_defn)
+        defn = deepcopy(BASE_DEFN)
         defn["main"]["fields"][0]["field_validate_method"] = validate_method_str
 
         m = self.disallow_class()
@@ -122,9 +148,8 @@ class TestDefinableSerializerByYAMLField(TestCase):
         with self.assertRaises(ValidationError):
             m.full_clean()
 
-
     def test_allow_validate_method_for_serializer(self):
-        defn = deepcopy(base_defn)
+        defn = deepcopy(BASE_DEFN)
         defn["main"]["serializer_validate_method"] = validate_method_str
 
         m = self.allow_class()
@@ -133,7 +158,7 @@ class TestDefinableSerializerByYAMLField(TestCase):
 
 
     def test_disallow_validate_method_for_serializer(self):
-        defn = deepcopy(base_defn)
+        defn = deepcopy(BASE_DEFN)
         defn["main"]["serializer_validate_method"] = validate_method_str
 
         m = self.disallow_class()

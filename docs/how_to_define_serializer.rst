@@ -568,3 +568,71 @@ Validatorクラスを利用する場合は、各フィールドの ``validators`
 .. warning::
 
     CorrectDataValidatorクラスはテスト用です。テスト以外では利用しないように注意してください。
+
+
+------------------------------------------------------------------------------
+
+
+カスタムされた基底クラスまたはミックスインクラスの指定
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+**0.1.14で登場しました。**
+
+Python のクラス機構はオブジェクト指向プログラミングの標準的な機能を全て提供しています。
+クラスの継承メカニズムは、複数の基底クラスを持つことができ、派生クラスで基底クラスの任意のメソッドをオーバライドすることができます。
+
+definable_serializerでは、作成されるシリアライザークラスに対して基底クラス、もしくはミックスインクラスを指定するいくつ可能方法を提供しています。
+
+
+django.settingsで指定する
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+以下のように追加したい基底クラス、またはミックスインクラスを文字列で複数指定することができます。
+
+.. code-block:: python
+
+    DEFINABLE_SERIALIZER_SETTINGS = {
+        "BASE_CLASSES": [
+            "foo.bar.MixinClassOne",
+            "foo.bar.MixinClassTwo",
+            ...
+        ]
+    }
+
+以降、definable_serializerで作成されるクラスは、全て上記で指定したクラスを継承します。
+
+
+build_serializerの引数を指定する
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+build_serializer関数を通してシリアライザークラスを作成している場合は、引数に追加したい基底クラス、またはミックスインクラスを指定します。
+
+.. code-block:: python
+
+    >>> from definable_serializer.serializers import build_serializer
+    >>> class MixinClassOne:
+    ...     it_is_one = True
+    ...
+    >>> class MixinClassTwo:
+    ...     it_is_two = True
+    ...
+    >>> serializer_class = build_serializer(
+    ...     defn_data
+    ...     base_classes=[
+    ...         MixinClassOne,
+    ...         MixinClassTwo,
+    ...     ],
+    ... )
+    ...
+    >>> serializer = serializer_class()
+    >>> getattr(serializer, "it_is_one")
+    True
+    >>> getattr(serializer, "it_is_two")
+    True
+
+base_classesの引数は以下のユーティリティ関数でも指定することができます
+
+- :ref:`build_serializer_function`
+- :ref:`build_serializer_by_json_function`
+- :ref:`build_serializer_by_json_file_function`
+- :ref:`build_serializer_by_yaml_function`

@@ -10,6 +10,7 @@ import yaml
 from copy import deepcopy
 from collections import OrderedDict
 import datetime
+import importlib
 
 
 TEST_DATA_FILE_DIR = os.path.join(
@@ -496,24 +497,99 @@ class TestSerializer(TestCase):
         self.assertEqual(serializer.fields["non_default_time_field"].initial, None)
         self.assertEqual(serializer.fields["non_default_datetime_field"].initial, None)
 
-
-    def test_add_more_base_classes(self):
-
+    def test_add_more_base_classes_by_settings(self):
+        """
+        setup baseclasses in DEFINABLE_SERIALIZER_SETTINGS.BASE_CLASSES
+        """
         DEFINABLE_SERIALIZER_SETTINGS = {
             "BASE_CLASSES": [
-                "definable_serializer.tests.test_serializers.AdditionalTestClassForTest",
+                "definable_serializer.tests.test_serializers.AdditionalTestClassForTestAddMoreBaseClassesBySettings",
             ]
         }
 
         with self.settings(DEFINABLE_SERIALIZER_SETTINGS=DEFINABLE_SERIALIZER_SETTINGS):
+            importlib.reload(definable_serializer)
             yaml_file = os.path.join(TEST_DATA_FILE_DIR, "test_translation.yml")
             serializer_class = definable_serializer.build_serializer_by_yaml_file(yaml_file)
-            self.assertTrue(hasattr(serializer_class(), "SAY_HELLO"))
+            self.assertTrue(
+                hasattr(serializer_class(), "AdditionalTestClassForTestAddMoreBaseClassesBySettings"))
 
 
-class AdditionalTestClassForTest:
+        DEFINABLE_SERIALIZER_SETTINGS = {
+            "BASE_CLASSES": [
+                "NonExistClass",
+            ]
+        }
+        with self.settings(DEFINABLE_SERIALIZER_SETTINGS=DEFINABLE_SERIALIZER_SETTINGS):
+            with self.assertRaises(ValidationError):
+                importlib.reload(definable_serializer)
+
+    def test_add_more_base_classes_call_build_serializer_by_json_file(self):
+        serializer_class = definable_serializer.build_serializer_by_json_file(
+            os.path.join(TEST_DATA_FILE_DIR, "test_all_type_fields.json"),
+            base_classes=[
+                AdditionalTestClassForTestAddMoreBaseClassesByCall
+            ]
+        )
+        self.assertTrue(
+            hasattr(serializer_class(), "AdditionalTestClassForTestAddMoreBaseClassesByCall"))
+
+
+    def test_add_more_base_classes_call_build_serializer_by_json(self):
+        json_file = os.path.join(TEST_DATA_FILE_DIR, "test_all_type_fields.json")
+        with open(json_file, "r") as fh:
+            serializer_class = definable_serializer.build_serializer_by_json(
+                fh.read(),
+                base_classes=[
+                    AdditionalTestClassForTestAddMoreBaseClassesByCall
+                ]
+            )
+            self.assertTrue(
+                hasattr(serializer_class(), "AdditionalTestClassForTestAddMoreBaseClassesByCall"))
+
+
+    def test_add_more_base_classes_call_build_serializer_by_yaml_file(self):
+        """
+        setup baseclasses in DEFINABLE_SERIALIZER_SETTINGS.BASE_CLASSES
+        """
+        yaml_file = os.path.join(TEST_DATA_FILE_DIR, "test_translation.yml")
+        serializer_class = definable_serializer.build_serializer_by_yaml_file(
+            yaml_file,
+            base_classes=[
+                AdditionalTestClassForTestAddMoreBaseClassesByCall
+            ]
+        )
+        self.assertTrue(
+            hasattr(serializer_class(), "AdditionalTestClassForTestAddMoreBaseClassesByCall"))
+
+    def test_add_more_base_classes_call_build_serializer_by_yaml(self):
+        """
+        setup baseclasses in DEFINABLE_SERIALIZER_SETTINGS.BASE_CLASSES
+        """
+        yaml_file = os.path.join(TEST_DATA_FILE_DIR, "test_translation.yml")
+
+        with open(yaml_file, "r") as fh:
+            serializer_class = definable_serializer.build_serializer_by_yaml(
+                fh.read(),
+                base_classes=[
+                    AdditionalTestClassForTestAddMoreBaseClassesByCall
+                ]
+            )
+            self.assertTrue(
+                hasattr(serializer_class(), "AdditionalTestClassForTestAddMoreBaseClassesByCall"))
+
+
+
+class AdditionalTestClassForTestAddMoreBaseClassesBySettings:
     """
-    definable_serializer.tests.test_serializers.AdditionalTestClassForTest
+    definable_serializer.tests.test_serializers.AdditionalTestClassForTestAddMoreBaseClassesBySettings
     """
+    AdditionalTestClassForTestAddMoreBaseClassesBySettings = True
 
-    SAY_HELLO = "SAY_GOODBAY"
+
+class AdditionalTestClassForTestAddMoreBaseClassesByCall:
+    # test_add_more_base_classes_call_build_serializer
+    """
+    definable_serializer.tests.test_serializers.AdditionalTestClassForTestAddMoreBaseClassesByCall
+    """
+    AdditionalTestClassForTestAddMoreBaseClassesByCall = True

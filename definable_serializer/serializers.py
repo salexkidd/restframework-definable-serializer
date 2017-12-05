@@ -36,6 +36,14 @@ STR_TO_DATETIME_MAP = {
 }
 
 
+BASE_CLASSES_BY_SETTINGS = list()
+for c in getattr(dj_settings, "DEFINABLE_SERIALIZER_SETTINGS", {}).get("BASE_CLASSES", []):
+    kls = pydoc.locate(c)
+    if not kls:
+        raise ValidationError("cannot find name '{}'".format(c))
+    BASE_CLASSES_BY_SETTINGS.append(kls)
+
+
 class TranslationMixin:
 
     @classmethod
@@ -406,10 +414,11 @@ class BaseDefinableSerializer(rf_serializers.Serializer, TranslationMixin):
         self.trans_text(**kwargs)
 
 
-def build_serializer(defn_data, allow_validate_method=True):
+def build_serializer(defn_data,
+                     base_classes=list(),
+                     allow_validate_method=True):
 
     def _build_serializer_class(serializer_defn):
-
         kwargs = {
             "serializer_classes": serializer_classes,
             "allow_validate_method": allow_validate_method,
@@ -424,11 +433,9 @@ def build_serializer(defn_data, allow_validate_method=True):
         return DefinableSerializerMeta(
             serializer_defn, _base_classes, **namespace, **kwargs)
 
-    _base_classes = tuple([BaseDefinableSerializer, ] + [
-        pydoc.locate(base_class) for base_class in getattr(
-            dj_settings, "DEFINABLE_SERIALIZER_SETTINGS", {}).get(
-                "BASE_CLASSES", [])
-    ])
+    _base_classes = tuple(
+        [BaseDefinableSerializer, ] + BASE_CLASSES_BY_SETTINGS + base_classes
+    )
 
     serializer_classes = dict()
 
@@ -453,24 +460,49 @@ def build_serializer(defn_data, allow_validate_method=True):
     return main_serializer
 
 
-def build_serializer_by_json(json_data, allow_validate_method=True):
-    return build_serializer(simplejson.loads(json_data), allow_validate_method)
+def build_serializer_by_json(json_data,
+                             base_classes=list(),
+                             allow_validate_method=True):
+
+    return build_serializer(
+        simplejson.loads(json_data),
+        base_classes=base_classes,
+        allow_validate_method=allow_validate_method,
+    )
 
 
-def build_serializer_by_json_file(json_file_path, allow_validate_method=True):
+def build_serializer_by_json_file(json_file_path,
+                                  base_classes=list(),
+                                  allow_validate_method=True):
+
     with open(json_file_path, "rb") as fh:
         reader = codecs.getreader("utf-8")
         return build_serializer(
             simplejson.load(reader(fh)),
-            allow_validate_method
+            base_classes=base_classes,
+            allow_validate_method=allow_validate_method,
         )
 
 
-def build_serializer_by_yaml(yaml_data, allow_validate_method=True):
-    return build_serializer(yaml.load(yaml_data), allow_validate_method)
+def build_serializer_by_yaml(yaml_data,
+                             base_classes=list(),
+                             allow_validate_method=True):
+
+    return build_serializer(
+        yaml.load(yaml_data),
+        base_classes=base_classes,
+        allow_validate_method=allow_validate_method,
+    )
 
 
-def build_serializer_by_yaml_file(yaml_file_path, allow_validate_method=True):
+def build_serializer_by_yaml_file(yaml_file_path,
+                                  base_classes=list(),
+                                  allow_validate_method=True):
+
     with open(yaml_file_path, "rb") as fh:
         reader = codecs.getreader("utf-8")
-        return build_serializer(yaml.load(reader(fh)), allow_validate_method)
+        return build_serializer(
+            yaml.load(reader(fh)),
+            base_classes=base_classes,
+            allow_validate_method=allow_validate_method,
+        )
