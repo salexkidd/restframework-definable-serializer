@@ -38,3 +38,6 @@ TEMPLATES = [
         },
     },
 ]
+
+USE_TZ = True
+TIME_ZONE = "Asia/Tokyo"

@@ -178,7 +178,15 @@ class DefinableSerializerMeta(rf_serializers.SerializerMetaclass,
 
         def _convert_str_to_datetime(field_name, datetime_str):
             try:
-                return dateparser.parse(datetime_str)
+                parser_settings = dict()
+                if getattr(dj_settings, "USE_TZ", None):
+                    parser_settings = {
+                        "TIMEZONE": getattr(dj_settings, "TIME_ZONE", None),
+                        "RETURN_AS_TIMEZONE_AWARE": True
+                    }
+                return dateparser.parse(
+                    datetime_str, settings=parser_settings)
+
             except Exception as e:
                 msg = "Can't parser date or time format: {}"
                 raise ValidationError({field_name: msg.format(e)})
