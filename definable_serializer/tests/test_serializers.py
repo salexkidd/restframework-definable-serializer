@@ -497,6 +497,90 @@ class TestSerializer(TestCase):
         self.assertEqual(serializer.fields["non_default_time_field"].initial, None)
         self.assertEqual(serializer.fields["non_default_datetime_field"].initial, None)
 
+    def test_date_or_time_field_initial_yaml(self):
+        yaml_data = """
+        main:
+          name: DatetimeSerializer
+          fields:
+            - name: datetime_field
+              field: DateTimeField
+              field_kwargs:
+                initial: 2000-01-02 03:04:05
+            - name: date_field
+              field: DateField
+              field_kwargs:
+                initial: 2000-01-02
+            - name: time_field
+              field: TimeField
+              field_kwargs:
+                initial: 03:04:05
+        """
+        defined_serializer_kls = definable_serializer.build_serializer_by_yaml(yaml_data)
+
+        self.assertEqual(
+            defined_serializer_kls().fields["datetime_field"].initial.__class__,
+            datetime.datetime
+        )
+
+        self.assertEqual(
+            defined_serializer_kls().fields["date_field"].initial.__class__,
+            datetime.date
+        )
+
+        self.assertEqual(
+            defined_serializer_kls().fields["time_field"].initial.__class__,
+            datetime.time
+        )
+
+
+    def test_date_or_time_field_initial_json(self):
+        json_data = """{
+            "main": {
+                "name": "DatetimeSerializer",
+                "fields": [
+                    {
+                        "name": "datetime_field",
+                        "field": "DateTimeField",
+                        "field_kwargs": {
+                            "initial": "2000-01-02 03:04:05"
+                        }
+                    },
+                    {
+                        "name": "date_field",
+                        "field": "DateField",
+                        "field_kwargs": {
+                            "initial": "2000-01-02"
+                        }
+                    },
+                    {
+                        "name": "time_field",
+                        "field": "TimeField",
+                        "field_kwargs": {
+                            "initial": "03:04:05"
+                        }
+                    }
+                ]
+            }
+        }
+        """
+        defined_serializer_kls = definable_serializer.build_serializer_by_json(json_data)
+
+        self.assertEqual(
+            defined_serializer_kls().fields["datetime_field"].initial.__class__,
+            datetime.datetime
+        )
+
+        self.assertEqual(
+            defined_serializer_kls().fields["date_field"].initial.__class__,
+            datetime.date
+        )
+
+        self.assertEqual(
+            defined_serializer_kls().fields["time_field"].initial.__class__,
+            datetime.time
+        )
+
+
     def test_add_more_base_classes_by_settings(self):
         """
         setup baseclasses in DEFINABLE_SERIALIZER_SETTINGS.BASE_CLASSES

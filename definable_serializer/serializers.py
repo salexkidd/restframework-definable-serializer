@@ -177,6 +177,7 @@ class DefinableSerializerMeta(rf_serializers.SerializerMetaclass,
             return validators
 
         def _convert_str_to_datetime(field_name, datetime_str):
+            datetime_str = str(datetime_str)
             try:
                 parser_settings = dict()
                 if getattr(dj_settings, "USE_TZ", None):
