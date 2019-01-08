@@ -1,3 +1,4 @@
+import django
 from django.test import TestCase
 from django.http import HttpRequest
 from django.core.exceptions import ValidationError
@@ -350,9 +351,16 @@ class TestSerializer(TestCase):
         serializer = serializer_class(data={"using_validator_field": "wrong_data"})
         self.assertFalse(serializer.is_valid())
 
-        self.assertEqual(
-            len(serializer.fields["using_validator_field"].validators), 2
-        )
+        if django.VERSION[0] == 2:
+            # django2 add django.core.validators.ProhibitNullCharactersValidator
+            self.assertEqual(
+                len(serializer.fields["using_validator_field"].validators), 3
+            )
+        else:
+            self.assertEqual(
+                len(serializer.fields["using_validator_field"].validators), 2
+            )
+
 
     def test_using_not_exist_validators(self):
 
