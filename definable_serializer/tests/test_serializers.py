@@ -351,6 +351,9 @@ class TestSerializer(TestCase):
         serializer = serializer_class(data={"using_validator_field": "wrong_data"})
         self.assertFalse(serializer.is_valid())
 
+        print("*" * 30)
+        print(serializer.fields["using_validator_field"])
+
         if django.VERSION[0] == 2:
             # django2 add django.core.validators.ProhibitNullCharactersValidator
             self.assertEqual(
