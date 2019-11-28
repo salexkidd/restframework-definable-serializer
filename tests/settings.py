@@ -1,8 +1,10 @@
 INSTALLED_APPS = (
     'django.contrib.admin',
+
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
+    'django.contrib.messages',
     'definable_serializer',
 )
 
@@ -13,7 +15,13 @@ DATABASES = {
     }
 }
 SECRET_KEY = "secret_key_for_testing"
-MIDDLEWARE_CLASSES = []
+MIDDLEWARE_CLASSES = [
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+]
+MIDDLEWARE = MIDDLEWARE_CLASSES
+
 ROOT_URLCONF = 'tests.urls'
 
 TEMPLATES = [

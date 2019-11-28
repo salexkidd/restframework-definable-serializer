@@ -30,7 +30,7 @@ setup(
     license="MIT",
     install_requires=[
         "django-codemirror2>=0.2",
-        "jsonfield>=2.0.2",
+        "jsonfield2>=3.0.3",
         "django-yamlfield>=1.0.3",
         "PyYAML>=3.12",
         "ruamel.yaml>=0.13.5",

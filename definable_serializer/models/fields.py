@@ -5,8 +5,6 @@ from ..serializers import build_serializer
 
 from copy import deepcopy
 from codemirror2.widgets import CodeMirrorEditor
-# from jsonfield.fields import JSONField
-
 
 from .compat import YAMLField, JSONField
 
