@@ -317,7 +317,7 @@ class TestSerializer(TestCase):
     def test_field_and_serializer_validate_but_has_prolem_string(self):
         correct_serializer_define_data = None
         with open(os.path.join(TEST_DATA_FILE_DIR, "test_field_and_serializer_validate_method.yml"), "r") as fh:
-            correct_serializer_define_data = yaml.load(fh)
+            correct_serializer_define_data = yaml.load(fh, Loader=yaml.SafeLoader)
 
         # For Field
         wrong_field_validate_method = deepcopy(correct_serializer_define_data)
@@ -351,9 +351,6 @@ class TestSerializer(TestCase):
         serializer = serializer_class(data={"using_validator_field": "wrong_data"})
         self.assertFalse(serializer.is_valid())
 
-        print("*" * 30)
-        print(serializer.fields["using_validator_field"])
-
         if django.VERSION[0] == 2:
             # django2 add django.core.validators.ProhibitNullCharactersValidator
             self.assertEqual(
@@ -368,7 +365,7 @@ class TestSerializer(TestCase):
     def test_using_not_exist_validators(self):
 
         with open(os.path.join(TEST_DATA_FILE_DIR, "using_validator.yml")) as fh:
-            yaml_data = yaml.load(fh)
+            yaml_data = yaml.load(fh, Loader=yaml.SafeLoader)
 
         yaml_data["main"]["fields"][0]["validators"][0]["validator"]  = "foo.bar.NotExistValidator"
 
@@ -377,7 +374,7 @@ class TestSerializer(TestCase):
 
     def test_using_not_correct_validator_args(self):
         with open(os.path.join(TEST_DATA_FILE_DIR, "using_validator.yml")) as fh:
-            yaml_data = yaml.load(fh)
+            yaml_data = yaml.load(fh, Loader=yaml.SafeLoader)
 
         yaml_data["main"]["fields"][0]["validators"][0]["kwargs"] = {"kwargs": "not_allowed"}
 
@@ -422,7 +419,7 @@ class TestSerializer(TestCase):
 
         # not in default test
         with open(yaml_file, "r") as fh:
-            yaml_data = yaml.load(fh)
+            yaml_data = yaml.load(fh, Loader=yaml.SafeLoader)
 
         # 'default' not in label test
         copied_yaml_data = deepcopy(yaml_data)

@@ -498,7 +498,7 @@ def build_serializer_by_yaml(yaml_data,
                              allow_validate_method=True):
 
     return build_serializer(
-        yaml.load(yaml_data),
+        yaml.load(yaml_data, Loader=yaml.SafeLoader),
         base_classes=base_classes,
         allow_validate_method=allow_validate_method,
     )
@@ -511,7 +511,7 @@ def build_serializer_by_yaml_file(yaml_file_path,
     with open(yaml_file_path, "rb") as fh:
         reader = codecs.getreader("utf-8")
         return build_serializer(
-            yaml.load(reader(fh)),
+            yaml.load(reader(fh), Loader=yaml.SafeLoader),
             base_classes=base_classes,
             allow_validate_method=allow_validate_method,
         )
