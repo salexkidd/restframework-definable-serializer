@@ -17,10 +17,10 @@ restframework-definable-serializer is definable serializer by JSON or YAML forma
 - django-codemirror2>=0.2
 - django-jsonfield>=1.0.1
 - django-yamlfield>=1.0.3
-- PyYAML>=3.12
+- PyYAML>=5.2
 - ruamel.yaml>=0.13.5
 - simplejson>=3.11.1
-- six>=1.11.0
+- six>=1.13.0
 
 
 # Quick start
