@@ -68,3 +68,7 @@ class DefinableSerializerByYAMLField(AbstractDefinableSerializerField, YAMLField
     def formfield(self, **kwargs):
         kwargs["widget"] = CodeMirrorEditor(**_CODE_MIRROR_OPTION_FOR_YAML)
         return super().formfield(**kwargs)
+
+    # Fix for Django 3.0 and If the Django-YAMLField responds, remove it.
+    def from_db_value(self, value, expression, connection, context=None):
+        return self.to_python(value)
