@@ -8,11 +8,6 @@
             },
 
             {
-                "name": "nullboolean_field",
-                "field": "NullBooleanField"
-            },
-
-            {
                 "name": "char_field",
                 "field": "CharField"
             },

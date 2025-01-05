@@ -48,9 +48,15 @@ _correct_single_definition_data = {
 class ExampleJSONModel(AbstractDefinitiveSerializerModel):
     foo_bar_baz = DefinableSerializerByJSONField()
 
+    class Meta:
+        app_label = "testapp"
+
 
 class ExampleYAMLModel(AbstractDefinitiveSerializerModel):
     foo_bar_baz = DefinableSerializerByYAMLField()
+
+    class Meta:
+        app_label = "testapp"
 
 
 class AbstractFieldTest:

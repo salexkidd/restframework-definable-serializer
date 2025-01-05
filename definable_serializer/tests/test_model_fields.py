@@ -34,11 +34,17 @@ class ExampleJSONModelWithAllowValidateMethod(AbstractDefinitiveSerializerModel)
         allow_validate_method=True,
     )
 
+    class Meta:
+        app_label = "testapp"
+
 
 class ExampleYAMLModelWithAllowValidateMethod(AbstractDefinitiveSerializerModel):
     serializer_defn = DefinableSerializerByYAMLField(
         allow_validate_method=True,
     )
+
+    class Meta:
+        app_label = "testapp"
 
 
 class ExampleJSONModelWithDisallowValidateMethod(AbstractDefinitiveSerializerModel):
@@ -46,11 +52,17 @@ class ExampleJSONModelWithDisallowValidateMethod(AbstractDefinitiveSerializerMod
         allow_validate_method=False,
     )
 
+    class Meta:
+        app_label = "testapp"
+
 
 class ExampleYAMLModelWithDisallowValidateMethod(AbstractDefinitiveSerializerModel):
     serializer_defn = DefinableSerializerByYAMLField(
         allow_validate_method=False,
     )
+
+    class Meta:
+        app_label = "testapp"
 
 
 class SpecifyBaseClassesModel(AbstractDefinitiveSerializerModel):
@@ -61,6 +73,9 @@ class SpecifyBaseClassesModel(AbstractDefinitiveSerializerModel):
         allow_validate_method=True,
         base_classes=[TestClass]
     )
+
+    class Meta:
+        app_label = "testapp"
 
 
 class TestSpecifyBaseClasses(TestCase):
@@ -75,7 +90,6 @@ class TestSpecifyBaseClasses(TestCase):
 
         serializer_class = m.get_serializer_defn_serializer_class()
         self.assertTrue(hasattr(serializer_class(), "IamTestClass"))
-
 
 
 class TestDefinableSerializerByJSONField(TestCase):

@@ -1,14 +1,18 @@
 from django.contrib import admin
-from django.conf.urls import url
-from django.template import RequestContext
-from django.shortcuts import get_object_or_404
 
+try:
+    from django.conf.urls import url
+except ImportError:
+    from django.urls import re_path as url
+
+from functools import update_wrapper
+
+from django.shortcuts import get_object_or_404
+from django.template import RequestContext
 from rest_framework.renderers import AdminRenderer
 
 from definable_serializer.models import AbstractDefinableSerializerField
 from definable_serializer.views import ShowSerializerInfo
-
-from functools import update_wrapper
 
 
 class DefinableSerializerAdmin(admin.ModelAdmin):

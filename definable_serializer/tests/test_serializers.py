@@ -605,7 +605,6 @@ class TestSerializer(TestCase):
             self.assertTrue(
                 hasattr(serializer_class(), "AdditionalTestClassForTestAddMoreBaseClassesBySettings"))
 
-
         DEFINABLE_SERIALIZER_SETTINGS = {
             "BASE_CLASSES": [
                 "NonExistClass",
@@ -625,7 +624,6 @@ class TestSerializer(TestCase):
         self.assertTrue(
             hasattr(serializer_class(), "AdditionalTestClassForTestAddMoreBaseClassesByCall"))
 
-
     def test_add_more_base_classes_call_build_serializer_by_json(self):
         json_file = os.path.join(TEST_DATA_FILE_DIR, "test_all_type_fields.json")
         with open(json_file, "r") as fh:
@@ -637,7 +635,6 @@ class TestSerializer(TestCase):
             )
             self.assertTrue(
                 hasattr(serializer_class(), "AdditionalTestClassForTestAddMoreBaseClassesByCall"))
-
 
     def test_add_more_base_classes_call_build_serializer_by_yaml_file(self):
         """

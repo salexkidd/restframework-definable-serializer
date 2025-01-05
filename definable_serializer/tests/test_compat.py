@@ -7,6 +7,9 @@ from ..models.compat import YAMLField
 class TestYAMLModel(models.Model):
     yaml_field = YAMLField()
 
+    class Meta:
+        app_label = "testapp"
+
 
 class TestYAMLField(TestCase):
     ...
@@ -35,7 +38,7 @@ class TestYAMLField(TestCase):
         self.assertEqual("", yaml_field.get_prep_value(None))
 
         yaml_field = YAMLField()
-        data = {"aaa": "aaa😺",}
+        data = {"aaa": "aaa😺"}
 
         self.assertEqual(
             "aaa: aaa😺\n",
