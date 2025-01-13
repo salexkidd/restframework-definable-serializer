@@ -11,9 +11,9 @@ restframework-definable-serializer is definable serializer by JSON or YAML forma
 
 
 # Dependencies
-- python 3
-- django>=1.11 or django>=2.2.7
-- djangorestframework>=3.7.0
+- python>=3.12
+- django>=4
+- djangorestframework>=3.15.0
 - django-codemirror2>=0.2
 - django-jsonfield>=1.0.1
 - django-yamlfield>=1.0.3

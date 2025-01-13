@@ -17,7 +17,7 @@ from .compat import YAMLField, JSONField
 _CODE_MIRROR_OPTION = {
     "options": {
         'lineNumbers': True,
-        'tabSize': 2,
+        'tabSize': 4,
         'indentUnit': 2,
         'indentWithTabs': False,
         'theme': "monokai",

@@ -24,16 +24,14 @@ class DefinableSerializerAdmin(admin.ModelAdmin):
         for field in self.model._meta.fields:
             if isinstance(field, AbstractDefinableSerializerField):
                 field_obj = getattr(instance, field.name)
-
                 try:
                     serializer = getattr(
                         instance, "get_{}_serializer_class".format(field.name)
                     )()()
                     setattr(serializer, "serializer_name", serializer.__class__.__name__)
                     serializers_dict[field.name] = serializer
-
                 except Exception as e:
-                    ...
+                    print(e)
 
         return serializers_dict
 
@@ -43,6 +41,7 @@ class DefinableSerializerAdmin(admin.ModelAdmin):
         extra_context["restframework_definable_serializers"] = self.__get_serializers(
             instance
         )
+        print(extra_context["restframework_definable_serializers"])
         return super().changeform_view(request, object_id, form_url, extra_context)
 
     def get_urls(self):

@@ -1,19 +1,23 @@
 from django.conf import settings as dj_settings
-from django.utils.translation import ugettext as _
 from django.core.exceptions import ValidationError
 from django.utils.translation import get_language
-
 from rest_framework import serializers as rf_serializers
 
-import dateparser
-import simplejson
+try:
+    from django.utils.translation import ugettext_lazy as _
+except ImportError:
+    from django.utils.translation import gettext_lazy as _
+
 import codecs
+import copy
 import pprint
 import pydoc
 import types
-import yaml
 import warnings
-import copy
+
+import dateparser
+import simplejson
+import yaml
 
 NOT_AVAILABLE_FIELDS = (
     rf_serializers.ListField,
@@ -145,7 +149,6 @@ class DefinableSerializerMeta(rf_serializers.SerializerMetaclass,
     @classmethod
     def _build_fields(metacls, fields_defn, serializer_classes,
                       allow_validate_method):
-
         fields = dict()
         validate_methods = dict()
 
@@ -178,19 +181,24 @@ class DefinableSerializerMeta(rf_serializers.SerializerMetaclass,
 
         def _convert_str_to_datetime(field_name, datetime_str):
             datetime_str = str(datetime_str)
+            if not datetime_str:
+                return None
             try:
                 parser_settings = dict()
                 if getattr(dj_settings, "USE_TZ", None):
-                    parser_settings = {
-                        "TIMEZONE": getattr(dj_settings, "TIME_ZONE", None),
-                        "RETURN_AS_TIMEZONE_AWARE": True
-                    }
-                return dateparser.parse(
-                    datetime_str, settings=parser_settings)
+                    ...
+                    # parser_settings = {
+                    #     "TIMEZONE": getattr(dj_settings, "TIME_ZONE", None),
+                    #     "RETURN_AS_TIMEZONE_AWARE": True
+                    # }
+                from dateutil.parser import parse
+                return parse(datetime_str)
+                # return dateparser.parse(
+                #     datetime_str, settings=parser_settings)
 
             except Exception as e:
-                msg = "Can't parser date or time format: {}"
-                raise ValidationError({field_name: msg.format(e)})
+                msg = f"Can't parser date or time format: value: {datetime_str} error: {e}"
+                raise ValidationError({field_name: msg})
 
         for defn in fields_defn:
             field_class_str = defn["field"]
@@ -226,6 +234,15 @@ class DefinableSerializerMeta(rf_serializers.SerializerMetaclass,
             trans_choices = trans_dict.get("choices", None)
             if trans_choices:
                 field_args[0] = trans_choices
+
+            if defn.get("field", None) in ["MultipleChoiceField", "ChoiceField",]:
+                field_kwargs["choices"] = field_args[0]
+                field_kwargs["style"] = {
+                    'inline': field_kwargs.get("inline", False),
+                }
+                del field_kwargs["inline"]
+                field_args.pop(0)
+
 
             validators = _build_validators(defn)
             if validators:
@@ -348,9 +365,7 @@ class DefinableSerializerMeta(rf_serializers.SerializerMetaclass,
     def __init__(cls, name, bases, namespace, **kwargs):
         super().__init__(name, bases, namespace)
 
-
 def _defn_pre_checker(defn_data):
-
     def _field_checker(defn):
         check_keys = ("name", "field",)
         for field in defn:
@@ -439,8 +454,12 @@ def build_serializer(defn_data,
             "namespace": DefinableSerializerMeta.__prepare__(
                 serializer_name, _base_classes, **kwargs)
         }
-        return DefinableSerializerMeta(
-            serializer_defn, _base_classes, **namespace, **kwargs)
+
+        try:
+            return DefinableSerializerMeta(
+                serializer_defn, _base_classes, **namespace, **kwargs)
+        except Exception as e:
+            raise e
 
     _base_classes = tuple(
         [BaseDefinableSerializer, ] + BASE_CLASSES_BY_SETTINGS + base_classes
@@ -456,13 +475,25 @@ def build_serializer(defn_data,
     main_serializer = None
 
     # build depending_serializers
-    try:
-        for defn in depending_defn:
+    # try:
+    #     for defn in depending_defn:
+    #         serializer_classes[defn["name"]] = _build_serializer_class(defn)
+
+    #     # build main serializer
+    #     main_serializer = _build_serializer_class(main_defn)
+
+    # except Exception as e:
+    #     raise ValidationError(e)
+
+    for defn in depending_defn:
+        try:
             serializer_classes[defn["name"]] = _build_serializer_class(defn)
+        except Exception as e:
+            raise ValidationError(e)
 
-        # build main serializer
+    # build main serializer
+    try:
         main_serializer = _build_serializer_class(main_defn)
-
     except Exception as e:
         raise ValidationError(e)
 

@@ -1,29 +1,28 @@
+import io
+
+import ruamel.yaml as ruamel_yaml
+import six
 from django.core.exceptions import ValidationError
 from django.core.serializers.json import DjangoJSONEncoder
-
-import six
-import ruamel.yaml as ruamel_yaml
-from yamlfield.fields import YAMLField as OriginalYAMLField
 from jsonfield.fields import JSONField as OriginalJSONField
+from yamlfield.fields import YAMLField as OriginalYAMLField
 
 
 class YAMLField(OriginalYAMLField):
 
     def _unicode_dump(self, value):
-        value = ruamel_yaml.dump(
-            value,
-            Dumper=ruamel_yaml.RoundTripDumper,
-            default_flow_style=False,
-            allow_unicode = True,
-        )
-        return value
+        yaml = ruamel_yaml.YAML(typ='rt', pure=True)
+        buf = io.StringIO()
+        yaml.dump(value, buf)
+        return buf.getvalue()
 
     def to_python(self, value):
         if value == "":
             return None
         try:
             if isinstance(value, six.string_types):
-                return ruamel_yaml.load(value, ruamel_yaml.RoundTripLoader)
+                yaml = ruamel_yaml.YAML(typ='rt')
+                return yaml.load(value)
         except Exception as e:
             raise e
 
@@ -33,8 +32,7 @@ class YAMLField(OriginalYAMLField):
         if not value or value == "":
             return ""
 
-        value = self._unicode_dump(value)
-        return value
+        return self._unicode_dump(value)
 
     def value_from_object(self, obj):
         value = getattr(obj, self.attname)

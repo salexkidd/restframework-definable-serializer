@@ -1,5 +1,9 @@
 from django.db.models.fields import BLANK_CHOICE_DASH
-from django.utils.translation import ugettext as _
+
+try:
+    from django.utils.translation import ugettext_lazy as _
+except ImportError:
+    from django.utils.translation import gettext_lazy as _
 
 from rest_framework import serializers as rf_serializers
 from rest_framework import fields as rf_fields
@@ -30,13 +34,15 @@ class MultipleCheckboxField(rf_fields.MultipleChoiceField):
 
     definable_serializer.extra_fields.MultipleCheckboxField
     """
-    def __init__(self, *args, required=False, inline=False, **kwargs):
+    def __init__(self, choices, required=False, inline=False, **kwargs):
         self.requred = required
         kwargs["style"] = {
             'base_template': 'checkbox_multiple.html',
             'inline': inline,
+            'source': "test",
         }
-        super().__init__(*args, **kwargs)
+        kwargs["choices"] = choices
+        super().__init__(**kwargs)
 
     def to_internal_value(self, data):
         data = super().to_internal_value(data)
